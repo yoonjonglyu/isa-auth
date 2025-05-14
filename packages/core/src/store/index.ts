@@ -1,9 +1,4 @@
-import {
-  initState,
-  getState,
-  setState,
-  subscribe,
-} from './store';
+import { initState, getState, setState, subscribe } from './store';
 
 const AUTH_KEY = 'isa-auth';
 
@@ -30,9 +25,9 @@ export function initStore(prevState: boolean) {
 
 // 커스텀 훅 스타일로 사용
 export function useAuthState() {
-  const auth = getState<boolean>(AUTH_KEY) ?? false;
+  const auth = () => getState<boolean>(AUTH_KEY) ?? false;
   const setAuth = (value: boolean) => setAuthState(value);
-  return [auth, setAuth] as [boolean, typeof setAuth];
+  return [auth, setAuth] as [() => boolean, typeof setAuth];
 }
 
 // Web Component root에 상태 반영
