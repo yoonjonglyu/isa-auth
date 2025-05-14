@@ -1,23 +1,65 @@
 # ISA AUTH
 
-> **ISA AUTH** is a frontend OAuth open-source package that supports multiple authentication methods.
+> **ISA AUTH** is a frontend OAuth open-source package that supports multiple authentication methods, including global, local, blockchain, and default strategies.
 
-## Features in Development
+---
 
-### 1. Global OAuth Providers
-- **Examples**: Google, Apple, Meta, LINE
+## 🌐 Why ISA AUTH?
 
-### 2. Local OAuth Providers
-- **Examples**: Kakao, Naver, WeChat
+Modern web applications often need to support various authentication providers — from global platforms like Google to region-specific ones like Naver or Kakao, and even blockchain-based identities.  
+**ISA AUTH** aims to provide a unified, modular, and frontend-friendly authentication solution that is:
 
-### 3. Blockchain Authentication
-- **Examples**: Integration with various blockchain-based authentication methods.
+- Lightweight and framework-agnostic
+- Easy to integrate with customizable UI
+- Expandable to future authentication trends like Web3
 
-### 4. Default Authentication
-- **Examples**: JSON Web Token (JWT) and other standard authentication methods.
+---
 
-### 5. Additional Features
-- **Examples**: Other authentication mechanisms and tools as needed.
+## ✨ Features in Development
+
+- [x] **Global OAuth Providers**  
+  _Examples_: Google, Apple, Meta, LINE
+
+- [ ] **Local OAuth Providers**  
+  _Examples_: Kakao, Naver, WeChat
+
+- [ ] **Blockchain Authentication**  
+  _Examples_: Sign-In With Ethereum (SIWE), other Web3 methods
+
+- [ ] **Default Authentication**  
+  _Examples_: JSON Web Token (JWT), email/password flows
+
+- [ ] **Additional Features**  
+  _Examples_: Token utilities, refresh handling, session sync, etc.
+
+---
+
+## ⚙️ Tech Stack
+
+- **Language**: TypeScript  
+- **Platform**: Framework-agnostic (React / Vue / Svelte compatible)  
+- **Protocols**: OAuth 2.0, OIDC, JWT, SIWE  
+- **UI**: Headless, customizable components (planned)
+
+---
+
+## 📦 Installation
+
+> Coming soon — will support NPM/Yarn installation
+
+```bash
+npm install isa-auth
+# or
+yarn add isa-auth
+```
+
+## 🧩 Contribution
+
+We welcome contributions!   
+Please read the CONTRIBUTING.md for guidelines on how to help us grow ISA AUTH.   
+
+## 🙌 Acknowledgements
+This project is inspired by needs for a more flexible and modular authentication system in frontend-heavy applications, especially for international and decentralized platforms.
 
 ## License
 
