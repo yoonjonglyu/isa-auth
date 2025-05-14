@@ -1,5 +1,5 @@
 import { JwtManager } from '../auths/jwt/jwtManager';
-import { setAuthState } from '../store/index';\
+import { setAuthState } from '../store/index';
 import { TOKEN_KEY, REFRESH_KEY } from '../value';
 
 const TOKEN_STORAGE = localStorage;
