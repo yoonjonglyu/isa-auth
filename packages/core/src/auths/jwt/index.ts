@@ -32,12 +32,13 @@ export function getTokenPayload(token: string): any {
   }
 }
 export function getTokenFromHeader(header: string): string | null {
-  if (!header) {
+  if (!header) return null;
+
+  const parts = header.trim().split(' ');
+  if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') {
     return null;
   }
-  const parts = header.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') {
-    return null;
-  }
-  return parts[1];
+
+  const token = parts[1]?.trim();
+  return token || null;
 }

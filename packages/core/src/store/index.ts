@@ -9,14 +9,14 @@ export function initStore(prevState: boolean) {
 }
 // auth state
 export function getAuthState() {
-  return getState<boolean>(AUTH_KEY);
+  return getState<boolean>(AUTH_KEY) ?? false;
 }
 export function setAuthState(value: boolean) {
   setState(AUTH_KEY, value);
 }
 // access 토큰 state
 export function getAccessToken() {
-  return getState<string>(TOKEN_KEY);
+  return getState<string>(TOKEN_KEY) ?? null;
 }
 export function setAccessToken(value: string) {
   setState(TOKEN_KEY, value);
@@ -26,7 +26,7 @@ export function removeAccessToken() {
 }
 // auth info state
 export function getAuthInfo() {
-  return getState<any>(AUTH_INFO_KEY);
+  return getState<any>(AUTH_INFO_KEY) ?? null;
 }
 export function setAuthInfo(value: any) {
   setState(AUTH_INFO_KEY, value);
