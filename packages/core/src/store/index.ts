@@ -1,5 +1,5 @@
 import { initState, getState, setState, subscribe } from './store';
-import { AUTH_KEY, TOKEN_KEY, AUTH_INFO_KEY, AUTH_EVENT } from '../value';
+import { AUTH_KEY, TOKEN_KEY, AUTH_INFO_KEY } from '../value';
 
 // 초기 상태 등록
 export function initStore(prevState: boolean) {
@@ -35,16 +35,7 @@ export function removeAuthInfo() {
   setState(AUTH_INFO_KEY, null);
 }
 
-// 커스텀 훅 스타일로 사용
-// export function useAuthState() {
-//   const auth = () => getState<boolean>(AUTH_KEY) ?? false;
-//   const setAuth = (value: boolean) => setAuthState(value);
-//   return [auth, setAuth] as [() => boolean, typeof setAuth];
-// }
-/**
- * 아직 여기서 어느 레이어까지 다루어야할지 고민중.일단 state를 다루는 영역까지는 맞는데 과연 binding까지 해야할지?
- */
-// Web Components: Custom event for auth state changes
+// subscribe to auth state
 export function watchAuthState<T extends HTMLElement>(
   callback: (auth: boolean) => void,
 ) {
@@ -52,32 +43,4 @@ export function watchAuthState<T extends HTMLElement>(
     // 구독자로서 변화 감지
     callback(auth);
   });
-}
-// Web Component root에 상태 반영
-export function AuthProvider<T extends HTMLElement>(root: T) {
-  watchAuthState((auth) => {
-    if (auth) {
-      root.setAttribute('isa-auth', 'true');
-    } else {
-      root.removeAttribute('isa-auth');
-    }
-    // 커스텀 이벤트도 발송 (웹 컴포넌트나 외부 연동용)
-    root.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: auth }));
-  });
-  root.addEventListener(AUTH_EVENT, (event: Event) => {
-    const auth = (event as CustomEvent<boolean>).detail;
-    if (auth) {
-      root.setAttribute('isa-auth', 'true');
-    } else {
-      root.removeAttribute('isa-auth');
-    }
-  });
-
-  // 초기 상태 반영
-  const auth = getState<boolean>(AUTH_KEY);
-  if (auth) {
-    root.setAttribute('isa-auth', 'true');
-  } else {
-    root.removeAttribute('isa-auth');
-  }
 }
