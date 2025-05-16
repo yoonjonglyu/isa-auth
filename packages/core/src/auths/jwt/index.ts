@@ -17,11 +17,13 @@ export function isValidToken(token: string): boolean {
 
 export function isExpiredToken(token: string): boolean {
   const decoded = jwt.decode(token);
-  const expired =
-    decoded && typeof decoded === 'object' && decoded.exp
-      ? decoded.exp * 1000
-      : Date.now() + 10 * 60 * 1000;
-  return Date.now() < expired;
+
+  if (!decoded || typeof decoded !== 'object' || !decoded.exp) {
+    return true; // 만료로 간주
+  }
+
+  const expiresAt = decoded.exp * 1000;
+  return Date.now() >= expiresAt;
 }
 
 export function getTokenPayload(token: string): any {
