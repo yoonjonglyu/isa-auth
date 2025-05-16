@@ -16,30 +16,27 @@ class AuthBaseService {
     setAuthState(prevState);
     setAuthInfo(null);
   }
-}
-export function getIsAuth() {
-  return getAuthState();
-}
-export function setIsAuth(value: boolean) {
-  setAuthState(value);
+  getAuthState() {
+    return getAuthState();
+  }
+  setAuthState(value: boolean) {
+    setAuthState(value);
+  }
+  getAuthInfo() {
+    return getAuthInfo();
+  }
+  setAuthInfo(value: any) {
+    setAuthInfo(value);
+  }
+  watchAuthState<T extends HTMLElement>(
+    callback: (auth: boolean) => void,
+  ) {
+    return watchAuthState<T>(callback);
+  }
+  clearAuthState() {
+    setAuthState(false);
+    setAuthInfo(null);
+  }
 }
 
-export function getInfo() {
-  return getAuthInfo();
-}
-export function setInfo(value: any) {
-  setAuthInfo(value);
-}
-export function watchAuthStateService<T extends HTMLElement>(
-  callback: (auth: boolean) => void,
-) {
-  return watchAuthState<T>(callback);
-}
-export function clearAuthService() {
-  setAuthState(false);
-  setAuthInfo(null);
-}
-export function removeAuthService() {
-  setAuthState(false);
-  setAuthInfo(null);
-}
+export default AuthBaseService;
