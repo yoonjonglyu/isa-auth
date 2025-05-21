@@ -1,5 +1,14 @@
 export type AuthButtonType = 'rect' | 'rounded' | 'circle' | 'link' | 'brand';
-export type ProviderType = 'google' | 'apple' | 'kakao' | 'default';
+export type ProviderType =
+  | 'default'
+  | 'google'
+  | 'apple'
+  | 'kakao'
+  | 'line'
+  | 'naver'
+  | 'facebook'
+  | 'twitter'
+  | 'wechat';
 
 export interface LoginButtonConfig {
   id: string;
@@ -15,7 +24,11 @@ export interface LoginButtonProps {
   action: Function;
   config: LoginButtonConfig;
 }
-
+/**
+ *  @description provider 타입을 좀 더 구체적으로 해야하나?
+ * core package에서는 단순한 컴포넌트 정보를 담은 json인데 여기에 action이 필요한가?
+ * 외부에서 주입하는 props는 그러려니하지만 기본적인 공통 props는 좀 더 명확히 정의 내릴 수 있지않을까?
+ */
 class LoginButton {
   readonly type: AuthButtonType;
   readonly provider: ProviderType;
@@ -31,10 +44,14 @@ class LoginButton {
 
   private getDefaultText(): string {
     switch (this.provider) {
-      case 'google': return 'Sign in with Google';
-      case 'apple': return 'Sign in with Apple';
-      case 'kakao': return '카카오로 로그인';
-      default: return '로그인';
+      case 'google':
+        return 'Sign in with Google';
+      case 'apple':
+        return 'Sign in with Apple';
+      case 'kakao':
+        return '카카오로 로그인';
+      default:
+        return '로그인';
     }
   }
 
