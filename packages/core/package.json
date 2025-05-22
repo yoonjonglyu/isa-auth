@@ -30,7 +30,6 @@
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"
   },
   "dependencies": {
-    "google-auth-library": "^9.15.1",
     "isa-util": "^1.0.15",
     "jsonwebtoken": "^9.0.2"
   },
