@@ -9,8 +9,7 @@ import {
 } from './event/customAuth';
 // AuthCore.ts
 interface AuthCoreProps {
-  providerType?: ProviderType | AuthServiceType;
-  buttonType?: ButtonType;
+  providerType?: Exclude<ProviderType | AuthServiceType, 'none'>;
   secret?: string;
 }
 // provider와 service를 결합한 로직을 만들고 싶은데 어떻게 하는게 좋을까 고민중. 그냥 core에서 이 정도만 관리하고 외부에서 결합해도 되긴함.
@@ -21,8 +20,7 @@ class AuthCore {
   private serviceInstance: InstanceType<ReturnType<typeof getAuthService>>;
 
   constructor({
-    providerType = 'none',
-    buttonType = 'none',
+    providerType = 'base',
     secret = 'isa-auth-secret',
   }: AuthCoreProps) {
     // service 는 현재 state만쓰는 base와 jwt로 나뉘어져있음 추후 블록체인 서비스 추가 예정.
@@ -31,7 +29,10 @@ class AuthCore {
     this.provider = getProvider(
       providerType !== 'base' && providerType !== 'jwt' ? providerType : 'none',
     );
-    this.button = getButton(buttonType);
+    // 플래그 로직 정리하고 버튼부분도 Oauth안쓰는 경우에 기본 제공하는게 있긴해야할듯.
+    this.button = getButton(
+      providerType !== 'base' && providerType !== 'jwt' ? providerType : 'none',
+    );
     this.serviceInstance = new this._service(secret);
     this.serviceInstance.initStore(false);
   }
