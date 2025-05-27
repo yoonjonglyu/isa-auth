@@ -6,25 +6,29 @@
     "auth",
     "isa",
     "isa-auth",
-    "oauth"
+    "oauth",
+    "core"
   ],
   "author": "Isa <yunjonglyu@gmail.com> (yunjongryu)",
   "homepage": "https://github.com/yoonjonglyu/isa-auth#readme",
   "license": "MIT",
-  "main": "lib/core.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
-    "lib": "lib",
-    "test": "__tests__"
+    "dist": "dist"
   },
   "files": [
-    "lib"
+    "dist"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yoonjonglyu/isa-auth.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "build": "rimraf dist && swc ./src -d dist --strip-leading-paths",
+    "type": "tsc --emitDeclarationOnly ",
+    "prepare": "npm run build && npm run type"
   },
   "bugs": {
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"
@@ -34,6 +38,10 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.9"
+    "@swc/cli": "^0.7.7",
+    "@swc/core": "^1.11.29",
+    "@types/jsonwebtoken": "^9.0.9",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
   }
 }

@@ -3,7 +3,7 @@ import appleLoginButton from './appleLogin';
 import lineLoginbutton from './lineLogin';
 import naverLoginButton from './naverLogin';
 import wechatLoginButton from './wechatLogin';
-import metaLoginButton from './MetaLogin';
+import metaLoginButton from './metaLogin';
 
 const buttons = {
   google: googleLoginButton,

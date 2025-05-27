@@ -1,3 +1,3 @@
-import AuthCore from './AuthCore';
+import AuthCore from './authCore';
 
 export default AuthCore;
