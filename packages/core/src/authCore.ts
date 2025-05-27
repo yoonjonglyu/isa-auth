@@ -1,20 +1,27 @@
 import { getAuthService, AuthServiceType } from './service';
 import { getProvider, ProviderType } from './providers';
 
-import { getButton, ButtonType } from './components';
+import { getButton } from './components';
 import {
   addAuthEventListener,
   removeAuthEventListener,
   dispatchAuthEvent,
 } from './event/customAuth';
+import {
+  providerToButtonMap,
+  providerToServiceMap,
+  CoreProvicerType,
+} from './mappings';
+
 // AuthCore.ts
 interface AuthCoreProps {
-  providerType?: Exclude<ProviderType | AuthServiceType, 'none'>;
+  providerType: CoreProvicerType;
   secret?: string;
 }
-// provider와 service를 결합한 로직을 만들고 싶은데 어떻게 하는게 좋을까 고민중. 그냥 core에서 이 정도만 관리하고 외부에서 결합해도 되긴함.
+
+// provider와 service를 결합한 로직을 만들고 싶은데 어떻게 하는게 좋을까 고민중.
+// 그냥 core에서 이 정도만 관리하고 외부 pkg에서 결합해도 되긴함.
 class AuthCore {
-  private _service: ReturnType<typeof getAuthService>;
   private provider: ReturnType<typeof getProvider>;
   private button: ReturnType<typeof getButton>;
   private serviceInstance: InstanceType<ReturnType<typeof getAuthService>>;
@@ -23,18 +30,17 @@ class AuthCore {
     providerType = 'base',
     secret = 'isa-auth-secret',
   }: AuthCoreProps) {
-    // service 는 현재 state만쓰는 base와 jwt로 나뉘어져있음 추후 블록체인 서비스 추가 예정.
-    this._service = getAuthService(providerType === 'base' ? 'base' : 'jwt');
-    // provider 는 현재 base와 jwt 그리고 providerType에 따라 있음
-    this.provider = getProvider(
-      providerType !== 'base' && providerType !== 'jwt' ? providerType : 'none',
-    );
-    // 플래그 로직 정리하고 버튼부분도 Oauth안쓰는 경우에 기본 제공하는게 있긴해야할듯.
-    this.button = getButton(
-      providerType !== 'base' && providerType !== 'jwt' ? providerType : 'none',
-    );
-    this.serviceInstance = new this._service(secret);
+    const serviceType = providerToServiceMap[providerType] ?? 'base';
+    const buttonType = providerToButtonMap[providerType] ?? 'none';
+    const isProviderRequired =
+      providerType !== 'base' && providerType !== 'jwt';
+
+    const ServiceClass = getAuthService(serviceType);
+    this.serviceInstance = new ServiceClass(secret);
     this.serviceInstance.initStore(false);
+
+    this.provider = getProvider(isProviderRequired ? providerType : 'none');
+    this.button = getButton(buttonType);
   }
   // 서비스 인스턴스(state관리)
   getService() {
