@@ -22,5 +22,8 @@
   },
   "bugs": {
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"
+  },
+  "dependencies": {
+    "isa-auth-core": "^0.0.1"
   }
 }
