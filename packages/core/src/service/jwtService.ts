@@ -10,17 +10,17 @@ import { getAccessToken, setAccessToken, removeAccessToken } from '../store';
 import AuthBaseService from './baseAuthService';
 
 class JwtService extends AuthBaseService {
-  constructor(secret: string = 'wrong') {
+  constructor(publickey: string = 'wrong') {
     super();
     this.initStore(false);
-    this.configureJwt(secret);
+    this.configureJwt(publickey);
   }
   initStore(prevState: boolean) {
     super.initStore(prevState);
   }
-  // jwt secret 설정
-  configureJwt(secret: string) {
-    configureJwtManager(secret);
+  // jwt public 설정
+  configureJwt(publickey: string) {
+    configureJwtManager(publickey);
   }
   getAuthState() {
     return super.getAuthState();
@@ -71,7 +71,7 @@ class JwtService extends AuthBaseService {
     try {
       const newToken = await refreshTokenFn();
 
-      if (!isValidToken(newToken)) throw new Error('Invalid token');
+      if (!isExpiredToken(newToken)) throw new Error('Invalid token');
       const payload = getTokenPayload(newToken);
       this.setAuthInfo(
         isNull(this.getAuthInfo())

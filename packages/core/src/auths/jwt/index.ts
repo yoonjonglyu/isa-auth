@@ -8,7 +8,7 @@ export function configureJwtManager(secret: string) {
 
 export function isValidToken(token: string): boolean {
   try {
-    jwt.verify(token);
+    jwt.verify(token, { algorithms: ['RS256'] });
     return true;
   } catch {
     return false;
