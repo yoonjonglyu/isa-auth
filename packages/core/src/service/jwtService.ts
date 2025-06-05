@@ -10,7 +10,7 @@ import { getAccessToken, setAccessToken, removeAccessToken } from '../store';
 import AuthBaseService from './baseAuthService';
 
 class JwtService extends AuthBaseService {
-  constructor(secret: string) {
+  constructor(secret: string = 'wrong') {
     super();
     this.initStore(false);
     this.configureJwt(secret);
@@ -70,7 +70,7 @@ class JwtService extends AuthBaseService {
   ): Promise<string | null> {
     try {
       const newToken = await refreshTokenFn();
-      
+
       if (!isValidToken(newToken)) throw new Error('Invalid token');
       const payload = getTokenPayload(newToken);
       this.setAuthInfo(
