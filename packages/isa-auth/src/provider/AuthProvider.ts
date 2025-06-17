@@ -1,10 +1,4 @@
-import AuthCore from 'isa-auth-core';
-import { isNull } from 'isa-util';
-
-const BaseCore = new AuthCore({ providerType: 'base' });
-
-const BaseService = BaseCore.getService();
-const button = BaseCore.getButton();
+import { isNull, isUndefined } from 'isa-util';
 
 interface IAuthService {
   initStore(prevState: boolean): void;
@@ -29,6 +23,7 @@ interface IAuthProvider {
   getAccessToken(): Promise<string | null>;
   getUserInfo(): Promise<any>;
 }
+`  1q`;
 
 interface ILoginButton {
   getButtonClass(): string;
@@ -67,14 +62,46 @@ class AuthProvider<
     return {
       ...this.button.toJSON(),
       className: this.button.getButtonClass(),
+      onClick: this.onClick,
     };
   }
-  signin() {}
-  signout() {}
+  onClick() {
+    if (isNull(this.provider)) return;
+    this.provider.signIn();
+  }
+  async signIn() {
+    if (this.service.getAuthState()) return;
+
+    if (!isUndefined(this.service.setAccessToken)) {
+      this.service.setAccessToken('');
+    }
+    this.service.setAuthState(true);
+  }
+  signOut() {
+    if (!this.service.getAuthState() || isNull(this.provider)) return;
+    this.provider.signOut();
+    this.service.clearAuthState();
+  }
+  async refrash(cb: () => Promise<string>) {
+    if (!this.service.refreshToken) return;
+    await this.service.refreshToken(cb);
+  }
+  restore() {
+    const token = this.service.getAccessToken?.();
+    if (token) {
+      this.service.setAuthState(true);
+    }
+  }
+  async getUserInfo() {
+    return await this.provider?.getUserInfo?.();
+  }
+  getAccessToken() {
+    if (!this.service.getAccessToken) return null;
+    return this.service.getAccessToken();
+  }
+  getAuthState() {
+    return this.service.getAuthState();
+  }
 }
-const test = new AuthProvider<typeof BaseService, null, typeof button>(
-  BaseService,
-  null,
-  button,
-);
+
 export default AuthProvider;
