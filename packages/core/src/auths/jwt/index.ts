@@ -1,46 +1,39 @@
 import { JwtManager } from './jwtManager';
+import {
+  decodeToken,
+  isExpiredToken,
+  getTokenPayload,
+  getTokenFromHeader,
+  getTokenTimeRemaining,
+  base64UrlDecode,
+  base64UrlEncode,
+  JwtHeader,
+  JwtPayload,
+  DecodedToken,
+} from './jwtUtils';
 
-let jwt: JwtManager;
+let defaultJwtManager = new JwtManager();
 
-export function configureJwtManager(secret: string) {
-  jwt = new JwtManager({ secret });
+export function configureJwtManager(secret: string, clockTolerance?: number) {
+  defaultJwtManager = new JwtManager({ secret, clockTolerance });
 }
 
 export function isValidToken(token: string): boolean {
-  try {
-    jwt.verify(token, { algorithms: ['RS256'] });
-    return true;
-  } catch {
-    return false;
-  }
+  if (!token) return false;
+  const decoded = decodeToken(token);
+  if (!decoded) return false;
+  return !isExpiredToken(token);
 }
 
-export function isExpiredToken(token: string): boolean {
-  const decoded = jwt.decode(token);
+export {
+  JwtManager,
+  decodeToken,
+  isExpiredToken,
+  getTokenPayload,
+  getTokenFromHeader,
+  getTokenTimeRemaining,
+  base64UrlDecode,
+  base64UrlEncode,
+};
 
-  if (!decoded || typeof decoded !== 'object' || !decoded.exp) {
-    return true; // 만료로 간주
-  }
-
-  const expiresAt = decoded.exp * 1000;
-  return Date.now() >= expiresAt;
-}
-
-export function getTokenPayload(token: string): any {
-  try {
-    return jwt.decode(token);
-  } catch (error) {
-    return null;
-  }
-}
-export function getTokenFromHeader(header: string): string | null {
-  if (!header) return null;
-
-  const parts = header.trim().split(' ');
-  if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') {
-    return null;
-  }
-
-  const token = parts[1]?.trim();
-  return token || null;
-}
+export type { JwtHeader, JwtPayload, DecodedToken };

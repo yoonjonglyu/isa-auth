@@ -22,16 +22,13 @@ class GoogleAuthProvider implements AuthProvider {
     this.callback = callback;
   }
 
-  loadGoogleSdk(): Promise<void> {
-    return new Promise((resolve) => {
-      if (window.google && window.google.accounts?.id) {
-        return resolve();
-      }
-      loadCDN('google-gsi', 'https://accounts.google.com/gsi/client', {
-        async: true,
-        defer: true,
-        onload: () => resolve(),
-      });
+  async loadGoogleSdk(): Promise<void> {
+    if (typeof window !== 'undefined' && window.google && window.google.accounts?.id) {
+      return;
+    }
+    await loadCDN('google-gsi', 'https://accounts.google.com/gsi/client', {
+      async: true,
+      defer: true,
     });
   }
 

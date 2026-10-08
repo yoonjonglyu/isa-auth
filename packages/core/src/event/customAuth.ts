@@ -1,26 +1,50 @@
 import { AUTH_EVENT } from '../value';
-// dom custom event
-export function addAuthEventListener<T extends HTMLElement>(
-  root: T,
-  callback: (state: boolean) => void,
-) {
-  root.addEventListener(AUTH_EVENT, (event: Event) => {
-    const auth = (event as CustomEvent<boolean>).detail;
-    callback(auth);
-  });
+
+export function addAuthEventListener(
+  callback: (detail: any) => void,
+  target: EventTarget = typeof window !== 'undefined' ? window : ({} as any)
+): () => void {
+  const handler = (event: Event) => {
+    const detail = (event as CustomEvent).detail;
+    callback(detail);
+  };
+
+  if (target && typeof target.addEventListener === 'function') {
+    target.addEventListener(AUTH_EVENT, handler);
+    return () => target.removeEventListener(AUTH_EVENT, handler);
+  }
+  return () => {};
 }
-export function removeAuthEventListener<T extends HTMLElement>(
-  root: T,
-  callback: (state: boolean) => void,
+
+export function removeAuthEventListener(
+  callback: (detail: any) => void,
+  target: EventTarget = typeof window !== 'undefined' ? window : ({} as any)
 ) {
-  root.removeEventListener(AUTH_EVENT, (event: Event) => {
-    const auth = (event as CustomEvent<boolean>).detail;
-    callback(auth);
-  });
+  if (target && typeof target.removeEventListener === 'function') {
+    target.removeEventListener(AUTH_EVENT, callback as EventListener);
+  }
 }
-export function dispatchAuthEvent<T extends HTMLElement>(
-  root: T,
-  auth: boolean,
+
+export function dispatchAuthEvent(
+  eventNameOrDetail: string | any,
+  detailOrTarget?: any,
+  optionalTarget?: EventTarget
 ) {
-  root.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: auth }));
+  let eventType = AUTH_EVENT;
+  let payload = eventNameOrDetail;
+  let target = optionalTarget || (typeof window !== 'undefined' ? window : ({} as any));
+
+  if (typeof eventNameOrDetail === 'string' && detailOrTarget !== undefined) {
+    eventType = eventNameOrDetail;
+    payload = detailOrTarget;
+  } else if (typeof detailOrTarget?.dispatchEvent === 'function') {
+    target = detailOrTarget;
+  }
+
+  if (target && typeof target.dispatchEvent === 'function') {
+    const event = typeof CustomEvent !== 'undefined'
+      ? new CustomEvent(eventType, { detail: payload })
+      : ({ type: eventType, detail: payload } as any);
+    target.dispatchEvent(event);
+  }
 }

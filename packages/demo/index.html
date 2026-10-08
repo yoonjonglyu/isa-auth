@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISA AUTH - Interactive Demo & Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 24, 38, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --accent: #06b6d4;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --code-bg: #030712;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: radial-gradient(circle at top right, #1e1b4b, #0b0f19 50%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #818cf8;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-google {
+      background: #ffffff;
+      color: #1f2937;
+    }
+    .btn-google:hover {
+      background: #f3f4f6;
+    }
+
+    .btn-kakao {
+      background: #fee500;
+      color: #191919;
+    }
+    .btn-kakao:hover {
+      background: #fada0a;
+    }
+
+    .btn-naver {
+      background: #03c75a;
+      color: #ffffff;
+    }
+    .btn-naver:hover {
+      background: #02b350;
+    }
+
+    .btn-web3 {
+      background: linear-gradient(135deg, #627eea, #3b82f6);
+      color: #ffffff;
+    }
+    .btn-web3:hover {
+      opacity: 0.95;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .status-panel {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #a7f3d0;
+      max-height: 240px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .status-badge.authed {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .status-badge.unauthed {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      margin-right: 6px;
+    }
+
+    .log-box {
+      margin-top: 24px;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .log-header span {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .log-clear {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Framework-Agnostic Auth Suite</div>
+      <h1>ISA AUTH Playground</h1>
+      <p class="subtitle">다중 OAuth (Google, Kakao, Naver), Web3 SIWE, JWT 토큰 관리, 반응형 스토어 및 RBAC 가드 실시간 인터랙티브 데모</p>
+    </header>
+
+    <div class="grid">
+      <!-- 1. OAuth & Web3 Providers -->
+      <div class="card">
+        <div class="card-title">🔑 1. Providers</div>
+        <div class="card-desc">연동된 프로바이더로 로그인 시뮬레이션 또는 실제 흐름을 실행합니다.</div>
+        <div class="btn-group">
+          <button id="btn-google" class="btn btn-google">
+            <span>Sign in with Google</span>
+          </button>
+          <button id="btn-kakao" class="btn btn-kakao">
+            <span>카카오 로그인</span>
+          </button>
+          <button id="btn-naver" class="btn btn-naver">
+            <span>네이버 로그인</span>
+          </button>
+          <button id="btn-web3" class="btn btn-web3">
+            <span>Connect Web3 Wallet (SIWE)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Session & Store -->
+      <div class="card">
+        <div class="card-title">📦 2. Reactive Store</div>
+        <div class="card-desc">자체 반응형 스토어와 로컬스토리지 동기화 상태입니다.</div>
+        <div id="auth-status-badge" class="status-badge unauthed">
+          <span class="status-dot"></span>
+          <span id="auth-status-text">Unauthenticated</span>
+        </div>
+        <div class="status-panel" id="store-content">Store is empty. Please sign in.</div>
+        <div style="margin-top: 14px; display: flex; gap: 8px;">
+          <button id="btn-mock-login" class="btn btn-primary" style="flex: 1; padding: 8px 12px; font-size: 0.85rem;">
+            Mock JWT 발급
+          </button>
+          <button id="btn-signout" class="btn btn-danger" style="flex: 1; padding: 8px 12px; font-size: 0.85rem;">
+            로그아웃
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. RBAC & Guards -->
+      <div class="card">
+        <div class="card-title">🛡️ 3. RBAC & Guards</div>
+        <div class="card-desc">사용자 역할과 권한에 따른 라우트/액션 가드를 테스트합니다.</div>
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">현재 토큰 권한:</div>
+          <span class="tag">Role: ADMIN</span>
+          <span class="tag">Role: DEVELOPER</span>
+          <span class="tag">Scope: read:all</span>
+        </div>
+        <div class="btn-group">
+          <button id="btn-check-admin" class="btn btn-primary" style="background: #3730a3;">
+            ADMIN 전용 기능 접근 (Guard 검사)
+          </button>
+          <button id="btn-check-superadmin" class="btn btn-primary" style="background: #1e293b;">
+            SUPERADMIN 전용 기능 접근 (차단 테스트)
+          </button>
+          <button id="btn-check-fetch" class="btn btn-primary" style="background: #0f766e;">
+            Auth Fetch (자동 Bearer 토큰 주입)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Event Log -->
+    <div class="log-box">
+      <div class="log-header">
+        <span>📋 실시간 이벤트 & 로그</span>
+        <button id="btn-clear-log" class="log-clear">Clear</button>
+      </div>
+      <div class="status-panel" id="event-log" style="max-height: 180px; color: #93c5fd;">
+[SYSTEM] ISA AUTH Playground initialized successfully.
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Mock simulation script for demo playground
+    const logEl = document.getElementById('event-log');
+    const storeEl = document.getElementById('store-content');
+    const badgeEl = document.getElementById('auth-status-badge');
+    const badgeTextEl = document.getElementById('auth-status-text');
+
+    function log(message) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent = `[${time}] ${message}\n` + logEl.textContent;
+    }
+
+    document.getElementById('btn-clear-log').onclick = () => {
+      logEl.textContent = '';
+    };
+
+    // State
+    let authState = {
+      isAuthenticated: false,
+      token: null,
+      user: null
+    };
+
+    function updateUI() {
+      if (authState.isAuthenticated) {
+        badgeEl.className = 'status-badge authed';
+        badgeTextEl.textContent = 'Authenticated';
+        storeEl.textContent = JSON.stringify({
+          status: 'Authenticated',
+          user: authState.user,
+          token: authState.token ? `${authState.token.substring(0, 32)}...` : null
+        }, null, 2);
+      } else {
+        badgeEl.className = 'status-badge unauthed';
+        badgeTextEl.textContent = 'Unauthenticated';
+        storeEl.textContent = 'Store is empty. Please sign in.';
+      }
+    }
+
+    // Mock JWT Generator
+    function createMockToken(user) {
+      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const payload = btoa(JSON.stringify({
+        sub: user.id,
+        name: user.name,
+        email: user.email,
+        roles: user.roles || ['USER'],
+        permissions: ['read:users', 'write:users'],
+        exp: Math.floor(Date.now() / 1000) + 3600
+      }));
+      return `${header}.${payload}.simulated_signature`;
+    }
+
+    // Mock Login
+    document.getElementById('btn-mock-login').onclick = () => {
+      const user = {
+        id: 'usr-999',
+        name: 'Isa Developer',
+        email: 'developer@isa-auth.io',
+        roles: ['ADMIN', 'DEVELOPER']
+      };
+      authState.isAuthenticated = true;
+      authState.token = createMockToken(user);
+      authState.user = user;
+      localStorage.setItem('isa_auth_token', authState.token);
+      log(`[STORE] Mock JWT issued for ${user.name} (Roles: ${user.roles.join(', ')})`);
+      updateUI();
+    };
+
+    // Google Login Simulation
+    document.getElementById('btn-google').onclick = () => {
+      log('[OAUTH] Google GSI OAuth flow initiated...');
+      setTimeout(() => {
+        const user = { id: 'google-123', name: 'Google User', email: 'user@gmail.com', roles: ['USER'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('[OAUTH] Google Sign-In success! ID Token received & decoded.');
+        updateUI();
+      }, 500);
+    };
+
+    // Kakao Login Simulation
+    document.getElementById('btn-kakao').onclick = () => {
+      log('[OAUTH] Kakao OAuth popup opened...');
+      setTimeout(() => {
+        const user = { id: 'kakao-456', name: '라이언', email: 'ryan@kakao.com', roles: ['USER'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('[OAUTH] Kakao Login success! Profile and AccessToken received.');
+        updateUI();
+      }, 500);
+    };
+
+    // Naver Login Simulation
+    document.getElementById('btn-naver').onclick = () => {
+      log('[OAUTH] Naver Login flow triggered...');
+      setTimeout(() => {
+        const user = { id: 'naver-789', name: '네이버사용자', email: 'user@naver.com', roles: ['USER'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('[OAUTH] Naver Login completed.');
+        updateUI();
+      }, 500);
+    };
+
+    // Web3 SIWE Simulation
+    document.getElementById('btn-web3').onclick = async () => {
+      log('[WEB3] Requesting Ethereum accounts (EIP-1193)...');
+      setTimeout(() => {
+        const address = '0x71C...39724';
+        log(`[WEB3] Wallet connected: ${address}`);
+        log('[WEB3] Formatted EIP-4361 SIWE message. Requesting personal_sign...');
+        setTimeout(() => {
+          const user = { id: address, name: `ENS(${address.substring(0, 8)})`, roles: ['WEB3_USER', 'ADMIN'] };
+          authState.isAuthenticated = true;
+          authState.token = createMockToken(user);
+          authState.user = user;
+          log('[WEB3] Signature verified! SIWE session established.');
+          updateUI();
+        }, 600);
+      }, 400);
+    };
+
+    // Sign out
+    document.getElementById('btn-signout').onclick = () => {
+      authState.isAuthenticated = false;
+      authState.token = null;
+      authState.user = null;
+      localStorage.removeItem('isa_auth_token');
+      log('[STORE] User signed out. Cleared tokens and state.');
+      updateUI();
+    };
+
+    // RBAC: Check Admin
+    document.getElementById('btn-check-admin').onclick = () => {
+      if (!authState.isAuthenticated) {
+        log('❌ [GUARD FAIL] 401 Unauthenticated - 로그인 후 시도해주세요.');
+        return;
+      }
+      if (authState.user.roles && authState.user.roles.includes('ADMIN')) {
+        log('✅ [GUARD PASS] ADMIN 역할 검증 완료. 보호된 리소스에 접근했습니다.');
+      } else {
+        log('❌ [GUARD FAIL] 403 Forbidden - ADMIN 권한이 부족합니다.');
+      }
+    };
+
+    // RBAC: Check Superadmin (Should fail)
+    document.getElementById('btn-check-superadmin').onclick = () => {
+      if (!authState.isAuthenticated) {
+        log('❌ [GUARD FAIL] 401 Unauthenticated - 로그인 후 시도해주세요.');
+        return;
+      }
+      if (authState.user.roles && authState.user.roles.includes('SUPERADMIN')) {
+        log('✅ [GUARD PASS] SUPERADMIN 권한 승인.');
+      } else {
+        log('❌ [GUARD FAIL] 403 Forbidden - SUPERADMIN 권한이 필요하지만 현재 없습니다.');
+      }
+    };
+
+    // HTTP Auth Fetch Simulation
+    document.getElementById('btn-check-fetch').onclick = () => {
+      if (!authState.isAuthenticated) {
+        log('[FETCH] No token found. Sending unauthenticated request...');
+      } else {
+        log(`[FETCH] Injected header "Authorization: Bearer ${authState.token.substring(0, 16)}..."`);
+        log('[FETCH] Response: 200 OK (Authenticated API payload received)');
+      }
+    };
+  </script>
+</body>
+</html>

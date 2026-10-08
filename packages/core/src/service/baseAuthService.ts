@@ -1,4 +1,5 @@
 import {
+  initStore as setupStore,
   getAuthState,
   getAuthInfo,
   setAuthInfo,
@@ -8,13 +9,11 @@ import {
 
 class AuthBaseService {
   constructor() {
-    // 초기 상태 등록
     this.initStore(false);
   }
 
-  initStore(prevState: boolean) {
-    setAuthState(prevState);
-    setAuthInfo(null);
+  initStore(prevState: boolean = false) {
+    setupStore(prevState);
   }
   getAuthState() {
     return getAuthState();
@@ -22,8 +21,8 @@ class AuthBaseService {
   setAuthState(value: boolean) {
     setAuthState(value);
   }
-  getAuthInfo() {
-    return getAuthInfo();
+  getAuthInfo<T = any>(): T | null {
+    return getAuthInfo<T>();
   }
   setAuthInfo(value: any) {
     setAuthInfo(value);

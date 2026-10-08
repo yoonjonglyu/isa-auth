@@ -1,9 +1,15 @@
 {
-  "name": "root",
+  "name": "isa-auth-monorepo",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build:core": "yarn --cwd packages/core build && yarn --cwd packages/core type",
+    "build:auth": "yarn --cwd packages/isa-auth build",
+    "build": "yarn build:core && yarn build:auth",
+    "demo": "node packages/demo/server.js"
+  },
   "dependencies": {},
   "devDependencies": {
     "lerna": "^8.1.8"

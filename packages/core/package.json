@@ -1,12 +1,16 @@
 {
   "name": "isa-auth-core",
-  "version": "0.0.1",
-  "description": "auth core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser-friendly authentication core engine with multi-provider OAuth, Web3, RBAC, and reactive store",
   "keywords": [
     "auth",
     "isa",
     "isa-auth",
     "oauth",
+    "web3",
+    "siwe",
+    "rbac",
     "core"
   ],
   "author": "Isa <yunjonglyu@gmail.com> (yunjongryu)",
@@ -27,20 +31,18 @@
   },
   "scripts": {
     "build": "rimraf dist && swc ./src -d dist --strip-leading-paths",
-    "type": "tsc --emitDeclarationOnly ",
+    "type": "tsc --emitDeclarationOnly",
     "prepare": "npm run build && npm run type"
   },
   "bugs": {
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"
   },
   "dependencies": {
-    "isa-util": "^1.0.15",
-    "jsonwebtoken": "^9.0.2"
+    "isa-util": "latest"
   },
   "devDependencies": {
     "@swc/cli": "^0.7.7",
     "@swc/core": "^1.11.29",
-    "@types/jsonwebtoken": "^9.0.9",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3"
   }

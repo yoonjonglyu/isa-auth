@@ -1,10 +1,10 @@
 import { isNull, isUndefined } from 'isa-util';
 
-interface IAuthService {
-  initStore(prevState: boolean): void;
+export interface IAuthService {
+  initStore(prevState?: boolean): void;
   getAuthState(): boolean;
   setAuthState(value: boolean): void;
-  getAuthInfo(): any;
+  getAuthInfo<T = any>(): T | null;
   setAuthInfo(value: any): void;
   watchAuthState(callback: (auth: boolean) => void): void | (() => void);
   clearAuthState(): void;
@@ -14,18 +14,19 @@ interface IAuthService {
   getAccessTokenPayload?(): any;
   setAccessTokenFromHeader?(header: string): void;
   refreshToken?(refreshTokenFn: () => Promise<string>): Promise<string | null>;
+  hasRole?(role: string): boolean;
+  hasPermission?(permission: string): boolean;
 }
 
-interface IAuthProvider {
+export interface IAuthProvider {
   init(): Promise<void>;
-  signIn(): void;
+  signIn(): void | Promise<void>;
   signOut(): void;
-  getAccessToken(): Promise<string | null>;
+  getAccessToken(): Promise<string | null> | string | null;
   getUserInfo(): Promise<any>;
 }
-`  1q`;
 
-interface ILoginButton {
+export interface ILoginButton {
   getButtonClass(): string;
   toJSON(): {
     id: string;
@@ -40,10 +41,10 @@ interface ILoginButton {
   };
 }
 
-class AuthProvider<
-  S extends IAuthService,
-  P extends IAuthProvider | null,
-  B extends ILoginButton,
+export class AuthProvider<
+  S extends IAuthService = IAuthService,
+  P extends IAuthProvider | null = IAuthProvider | null,
+  B extends ILoginButton | null = ILoginButton | null,
 > {
   private service: S;
   private provider: P;
@@ -53,54 +54,90 @@ class AuthProvider<
     this.service = service;
     this.provider = provider;
     this.button = button;
+    this.onClick = this.onClick.bind(this);
     this.init();
   }
-  init() {
-    if (!isNull(this.provider)) this.provider.init();
+
+  async init(): Promise<void> {
+    if (this.provider) {
+      await this.provider.init();
+    }
   }
-  getbutton() {
+
+  getButton() {
+    if (!this.button) return null;
     return {
       ...this.button.toJSON(),
       className: this.button.getButtonClass(),
       onClick: this.onClick,
     };
   }
-  onClick() {
-    if (isNull(this.provider)) return;
-    this.provider.signIn();
-  }
-  async signIn() {
-    if (this.service.getAuthState()) return;
 
-    if (!isUndefined(this.service.setAccessToken)) {
-      this.service.setAccessToken('');
-    }
-    this.service.setAuthState(true);
+  async onClick(): Promise<void> {
+    await this.signIn();
   }
-  signOut() {
-    if (!this.service.getAuthState() || isNull(this.provider)) return;
-    this.provider.signOut();
+
+  async signIn(): Promise<void> {
+    if (this.provider) {
+      await this.provider.signIn();
+      const token = await this.provider.getAccessToken();
+      if (token && this.service.setAccessToken) {
+        this.service.setAccessToken(token);
+      }
+      const user = await this.provider.getUserInfo();
+      if (user) {
+        this.service.setAuthInfo(user);
+      }
+    } else {
+      this.service.setAuthState(true);
+    }
+  }
+
+  signOut(): void {
+    if (this.provider) {
+      this.provider.signOut();
+    }
     this.service.clearAuthState();
   }
-  async refrash(cb: () => Promise<string>) {
-    if (!this.service.refreshToken) return;
-    await this.service.refreshToken(cb);
+
+  async refresh(refreshTokenFn: () => Promise<string>): Promise<string | null> {
+    if (!this.service.refreshToken) return null;
+    return await this.service.refreshToken(refreshTokenFn);
   }
-  restore() {
+
+  restore(): void {
     const token = this.service.getAccessToken?.();
     if (token) {
       this.service.setAuthState(true);
     }
   }
-  async getUserInfo() {
-    return await this.provider?.getUserInfo?.();
+
+  async getUserInfo(): Promise<any> {
+    if (this.provider) {
+      return await this.provider.getUserInfo();
+    }
+    return this.service.getAuthInfo();
   }
-  getAccessToken() {
+
+  getAccessToken(): string | null {
     if (!this.service.getAccessToken) return null;
     return this.service.getAccessToken();
   }
-  getAuthState() {
+
+  getAuthState(): boolean {
     return this.service.getAuthState();
+  }
+
+  watchAuthState(callback: (auth: boolean) => void) {
+    return this.service.watchAuthState(callback);
+  }
+
+  hasRole(role: string): boolean {
+    return this.service.hasRole ? this.service.hasRole(role) : false;
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.service.hasPermission ? this.service.hasPermission(permission) : false;
   }
 }
 

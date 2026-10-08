@@ -1,26 +1,14 @@
 {
-  "name": "demo",
-  "version": "0.0.0",
-  "description": "> TODO: description",
-  "author": "Isa <yunjonglyu@gmail.com> (yunjongryu)",
-  "homepage": "https://github.com/yoonjonglyu/isa-auth#readme",
-  "license": "ISC",
-  "main": "lib/demo.js",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
-  "files": [
-    "lib"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yoonjonglyu/isa-auth.git"
-  },
+  "name": "isa-auth-demo",
+  "version": "0.1.0",
+  "description": "Interactive playground and demo for ISA-AUTH",
+  "author": "Isa <yunjonglyu@gmail.com>",
+  "license": "MIT",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "start": "node server.js"
   },
-  "bugs": {
-    "url": "https://github.com/yoonjonglyu/isa-auth/issues"
+  "dependencies": {
+    "isa-auth": "^0.1.0"
   }
 }
