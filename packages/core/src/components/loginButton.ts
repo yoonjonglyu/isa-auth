@@ -7,9 +7,14 @@ export type ButtonProviderType =
   | 'line'
   | 'naver'
   | 'facebook'
+  | 'meta'
   | 'twitter'
   | 'wechat'
-  | 'web3';
+  | 'web3'
+  | 'github'
+  | 'discord'
+  | 'world'
+  | 'passkey';
 
 export interface LoginButtonConfig {
   id: string;
@@ -51,6 +56,13 @@ class LoginButton {
         return '네이버 로그인';
       case 'web3':
         return 'Connect Ethereum Wallet';
+      case 'meta':
+      case 'facebook':
+        return 'Continue with Meta';
+      case 'world':
+        return 'Verify with World ID';
+      case 'passkey':
+        return 'Sign in with Passkey';
       default:
         return '로그인';
     }

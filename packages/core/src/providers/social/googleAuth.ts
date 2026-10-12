@@ -1,5 +1,5 @@
 import { loadCDN } from 'isa-util';
-import type { AuthProvider } from './authProvider';
+import type { AuthProvider } from '../authProvider';
 
 declare global {
   interface Window {
@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-class GoogleAuthProvider implements AuthProvider {
+export class GoogleAuthProvider implements AuthProvider {
   private clientId: string;
   private callback: (token: string) => string | Promise<string>;
 
@@ -34,13 +34,16 @@ class GoogleAuthProvider implements AuthProvider {
 
   async init() {
     await this.loadGoogleSdk();
-    window.google.accounts.id.initialize({
-      client_id: this.clientId,
-      callback: (response: any) => {
-        this.callback(response.credential);
-      },
-    });
+    if (typeof window !== 'undefined' && window.google) {
+      window.google.accounts.id.initialize({
+        client_id: this.clientId,
+        callback: (response: any) => {
+          this.callback(response.credential);
+        },
+      });
+    }
   }
+
   signIn() {
     if (typeof window !== 'undefined' && window.google) {
       window.google.accounts.id.prompt();
@@ -48,9 +51,10 @@ class GoogleAuthProvider implements AuthProvider {
       console.error('Google SDK is not loaded');
     }
   }
+
   signOut() {
     if (typeof window !== 'undefined' && window.google) {
-      window.google.accounts.id.revoke('EMAIL', (response: any) => {
+      window.google.accounts.id.revoke('EMAIL', () => {
         console.log('User signed out');
       });
       window.google.accounts.oauth2.revokeAccessToken();
@@ -58,20 +62,24 @@ class GoogleAuthProvider implements AuthProvider {
       console.error('Google SDK is not loaded');
     }
   }
+
   async getAccessToken() {
     if (typeof window !== 'undefined' && window.google) {
       const token = await window.google.accounts.oauth2.getAccessToken();
       return token;
     } else {
       console.error('Google SDK is not loaded');
+      return null;
     }
   }
+
   async getUserInfo() {
     if (typeof window !== 'undefined' && window.google) {
       const user = await window.google.accounts.id.getUserInfo();
       return user;
     } else {
       console.error('Google SDK is not loaded');
+      return null;
     }
   }
 }

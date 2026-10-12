@@ -1,5 +1,5 @@
 import { loadCDN } from 'isa-util';
-import type { AuthProvider } from './authProvider';
+import type { AuthProvider } from '../authProvider';
 
 declare global {
   interface Window {

@@ -11,6 +11,14 @@ export const providerToServiceMap: Record<CoreProviderType, AuthServiceType> = {
   kakao: 'jwt',
   naver: 'jwt',
   web3: 'base',
+  github: 'jwt',
+  apple: 'jwt',
+  discord: 'jwt',
+  line: 'jwt',
+  meta: 'jwt',
+  facebook: 'jwt',
+  world: 'base',
+  passkey: 'base',
 };
 
 export const providerToButtonMap: Record<CoreProviderType, ButtonType> = {
@@ -20,4 +28,12 @@ export const providerToButtonMap: Record<CoreProviderType, ButtonType> = {
   kakao: 'kakao',
   naver: 'naver',
   web3: 'web3',
+  github: 'github',
+  apple: 'apple',
+  discord: 'discord',
+  line: 'line',
+  meta: 'meta',
+  facebook: 'facebook',
+  world: 'world',
+  passkey: 'passkey',
 };

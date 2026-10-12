@@ -1,6 +1,6 @@
 {
   "name": "isa-auth-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Browser-friendly authentication core engine with multi-provider OAuth, Web3, RBAC, and reactive store",
   "keywords": [
@@ -38,7 +38,7 @@
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"
   },
   "dependencies": {
-    "isa-util": "latest"
+    "isa-util": "^1.1.1"
   },
   "devDependencies": {
     "@swc/cli": "^0.7.7",

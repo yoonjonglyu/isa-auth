@@ -1,5 +1,5 @@
 import { loadCDN } from 'isa-util';
-import type { AuthProvider } from './authProvider';
+import type { AuthProvider } from '../authProvider';
 
 declare global {
   interface Window {
@@ -58,7 +58,6 @@ export class NaverAuthProvider implements AuthProvider {
 
   signIn(): void {
     if (typeof window === 'undefined') return;
-    // If native Naver button anchor element exists, click it, or redirect
     const buttonElement = document.getElementById(this.loginButtonId);
     const link = buttonElement?.querySelector('a') as HTMLElement | null;
     if (link) {

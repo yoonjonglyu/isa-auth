@@ -2,7 +2,7 @@
  * Web3 Authentication Provider (SIWE - EIP-4361 Sign-In with Ethereum)
  */
 
-import type { AuthProvider } from './authProvider';
+import type { AuthProvider } from '../authProvider';
 
 declare global {
   interface Window {

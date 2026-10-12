@@ -175,6 +175,85 @@
       opacity: 0.95;
     }
 
+    .btn-github {
+      background: #24292e;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .btn-github:hover {
+      background: #2f363d;
+    }
+
+    .btn-apple {
+      background: #000000;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .btn-apple:hover {
+      background: #1a1a1a;
+    }
+
+    .btn-discord {
+      background: #5865F2;
+      color: #ffffff;
+    }
+    .btn-discord:hover {
+      background: #4752c4;
+    }
+
+    .btn-line {
+      background: #06C755;
+      color: #ffffff;
+    }
+    .btn-line:hover {
+      background: #05b04b;
+    }
+
+    .btn-meta {
+      background: #1877F2;
+      color: #ffffff;
+    }
+    .btn-meta:hover {
+      background: #166fe5;
+    }
+
+    .btn-world {
+      background: #000000;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .btn-world:hover {
+      background: #111111;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-passkey {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: #f8fafc;
+      border: 1px solid #334155;
+    }
+    .btn-passkey:hover {
+      background: #334155;
+    }
+
+    .category-group {
+      margin-bottom: 14px;
+    }
+    .category-group:last-child {
+      margin-bottom: 0;
+    }
+    .category-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .btn-danger {
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.3);
@@ -267,34 +346,84 @@
     <header>
       <div class="badge">Framework-Agnostic Auth Suite</div>
       <h1>ISA AUTH Playground</h1>
-      <p class="subtitle">다중 OAuth (Google, Kakao, Naver), Web3 SIWE, JWT 토큰 관리, 반응형 스토어 및 RBAC 가드 실시간 인터랙티브 데모</p>
+      <p class="subtitle">다중 OAuth (Google, Kakao, Naver, GitHub, Apple, Discord, LINE), Web3 SIWE, JWT 토큰 관리, 반응형 스토어, 와일드카드 RBAC 가드 & 라이프사이클 콜백 데모</p>
     </header>
 
     <div class="grid">
-      <!-- 1. OAuth & Web3 Providers -->
+      <!-- 1. Providers (Categorized) -->
       <div class="card">
-        <div class="card-title">🔑 1. Providers</div>
-        <div class="card-desc">연동된 프로바이더로 로그인 시뮬레이션 또는 실제 흐름을 실행합니다.</div>
-        <div class="btn-group">
-          <button id="btn-google" class="btn btn-google">
-            <span>Sign in with Google</span>
-          </button>
-          <button id="btn-kakao" class="btn btn-kakao">
-            <span>카카오 로그인</span>
-          </button>
-          <button id="btn-naver" class="btn btn-naver">
-            <span>네이버 로그인</span>
-          </button>
-          <button id="btn-web3" class="btn btn-web3">
-            <span>Connect Web3 Wallet (SIWE)</span>
-          </button>
+        <div class="card-title">🔑 1. Providers (종류별 분류)</div>
+        <div class="card-desc">카테고리별로 체계적으로 모듈화된 프로바이더 모음입니다.</div>
+
+        <!-- Category A: Social & Portals -->
+        <div class="category-group">
+          <div class="category-title">🌐 Social & Portals (6)</div>
+          <div class="btn-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <button id="btn-google" class="btn btn-google" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Google</span>
+            </button>
+            <button id="btn-apple" class="btn btn-apple" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Apple ID</span>
+            </button>
+            <button id="btn-meta" class="btn btn-meta" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Meta (FB)</span>
+            </button>
+            <button id="btn-kakao" class="btn btn-kakao" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Kakao</span>
+            </button>
+            <button id="btn-naver" class="btn btn-naver" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Naver</span>
+            </button>
+            <button id="btn-line" class="btn btn-line" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>LINE</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category B: Developer & Community -->
+        <div class="category-group">
+          <div class="category-title">💻 Developer & Community (2)</div>
+          <div class="btn-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <button id="btn-github" class="btn btn-github" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>GitHub</span>
+            </button>
+            <button id="btn-discord" class="btn btn-discord" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Discord</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category C: Web3 & Crypto -->
+        <div class="category-group">
+          <div class="category-title">🔗 Web3 & Crypto (1)</div>
+          <div class="btn-group">
+            <button id="btn-web3" class="btn btn-web3" style="padding: 8px 12px; font-size: 0.85rem;">
+              <span>Web3 Ethereum (SIWE EIP-4361)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category D: Identity & Biometrics -->
+        <div class="category-group">
+          <div class="category-title">🌐 Identity & Biometrics (2)</div>
+          <div class="btn-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <button id="btn-world" class="btn btn-world" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>World ID (Orb)</span>
+            </button>
+            <button id="btn-passkey" class="btn btn-passkey" style="padding: 8px 10px; font-size: 0.85rem;">
+              <span>Passkey (FIDO2)</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- 2. Session & Store -->
       <div class="card">
         <div class="card-title">📦 2. Reactive Store</div>
-        <div class="card-desc">자체 반응형 스토어와 로컬스토리지 동기화 상태입니다.</div>
+        <div class="card-desc">
+          프로덕션 기본 모드는 <strong>'memory' (Zero XSS)</strong> 또는 <strong>'cookie'</strong>입니다.<br>
+          <span style="color: #f59e0b; font-size: 0.78rem;">⚠️ 데모 F5 새로고침 편의를 위해 'dev_insecure_localStorage' 모드가 활성화되어 있습니다.</span>
+        </div>
         <div id="auth-status-badge" class="status-badge unauthed">
           <span class="status-dot"></span>
           <span id="auth-status-text">Unauthenticated</span>
@@ -302,7 +431,7 @@
         <div class="status-panel" id="store-content">Store is empty. Please sign in.</div>
         <div style="margin-top: 14px; display: flex; gap: 8px;">
           <button id="btn-mock-login" class="btn btn-primary" style="flex: 1; padding: 8px 12px; font-size: 0.85rem;">
-            Mock JWT 발급
+            Mock JWT 발급 (Admin)
           </button>
           <button id="btn-signout" class="btn btn-danger" style="flex: 1; padding: 8px 12px; font-size: 0.85rem;">
             로그아웃
@@ -310,25 +439,28 @@
         </div>
       </div>
 
-      <!-- 3. RBAC & Guards -->
+      <!-- 3. RBAC & Enhanced Guards -->
       <div class="card">
-        <div class="card-title">🛡️ 3. RBAC & Guards</div>
-        <div class="card-desc">사용자 역할과 권한에 따른 라우트/액션 가드를 테스트합니다.</div>
-        <div style="margin-bottom: 16px;">
+        <div class="card-title">🛡️ 3. Enhanced RBAC & Callbacks</div>
+        <div class="card-desc">와일드카드 권한, 계층적 역할 및 전역 라이프사이클 콜백을 테스트합니다.</div>
+        <div style="margin-bottom: 12px;">
           <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">현재 토큰 권한:</div>
-          <span class="tag">Role: ADMIN</span>
-          <span class="tag">Role: DEVELOPER</span>
-          <span class="tag">Scope: read:all</span>
+          <span class="tag">Roles: ADMIN, DEV</span>
+          <span class="tag">Perm: users:*</span>
+          <span class="tag">Perm: reports:read</span>
         </div>
-        <div class="btn-group">
-          <button id="btn-check-admin" class="btn btn-primary" style="background: #3730a3;">
-            ADMIN 전용 기능 접근 (Guard 검사)
+        <div class="btn-group" style="gap: 8px;">
+          <button id="btn-check-admin" class="btn btn-primary" style="background: #3730a3; padding: 9px 12px; font-size: 0.85rem;">
+            ADMIN 역할 가드 검사
           </button>
-          <button id="btn-check-superadmin" class="btn btn-primary" style="background: #1e293b;">
-            SUPERADMIN 전용 기능 접근 (차단 테스트)
+          <button id="btn-check-wildcard" class="btn btn-primary" style="background: #0284c7; padding: 9px 12px; font-size: 0.85rem;">
+            와일드카드 권한 검사 (users:delete)
           </button>
-          <button id="btn-check-fetch" class="btn btn-primary" style="background: #0f766e;">
-            Auth Fetch (자동 Bearer 토큰 주입)
+          <button id="btn-check-superadmin" class="btn btn-primary" style="background: #1e293b; padding: 9px 12px; font-size: 0.85rem;">
+            SUPERADMIN 차단 & onUnauthorized 콜백
+          </button>
+          <button id="btn-check-fetch" class="btn btn-primary" style="background: #0f766e; padding: 9px 12px; font-size: 0.85rem;">
+            Auth Fetch (401 자동 리프레시 테스트)
           </button>
         </div>
       </div>
@@ -393,7 +525,7 @@
         name: user.name,
         email: user.email,
         roles: user.roles || ['USER'],
-        permissions: ['read:users', 'write:users'],
+        permissions: user.permissions || ['users:*', 'reports:read'],
         exp: Math.floor(Date.now() / 1000) + 3600
       }));
       return `${header}.${payload}.simulated_signature`;
@@ -405,13 +537,14 @@
         id: 'usr-999',
         name: 'Isa Developer',
         email: 'developer@isa-auth.io',
-        roles: ['ADMIN', 'DEVELOPER']
+        roles: ['ADMIN', 'DEVELOPER'],
+        permissions: ['users:*', 'reports:read']
       };
       authState.isAuthenticated = true;
       authState.token = createMockToken(user);
       authState.user = user;
       localStorage.setItem('isa_auth_token', authState.token);
-      log(`[STORE] Mock JWT issued for ${user.name} (Roles: ${user.roles.join(', ')})`);
+      log(`[STORE] Mock JWT issued for ${user.name} (Roles: ${user.roles.join(', ')} / Perms: ${user.permissions.join(', ')})`);
       updateUI();
     };
 
@@ -419,39 +552,104 @@
     document.getElementById('btn-google').onclick = () => {
       log('[OAUTH] Google GSI OAuth flow initiated...');
       setTimeout(() => {
-        const user = { id: 'google-123', name: 'Google User', email: 'user@gmail.com', roles: ['USER'] };
+        const user = { id: 'google-123', name: 'Google User', email: 'user@gmail.com', roles: ['USER'], permissions: ['users:read'] };
         authState.isAuthenticated = true;
         authState.token = createMockToken(user);
         authState.user = user;
         log('[OAUTH] Google Sign-In success! ID Token received & decoded.');
         updateUI();
-      }, 500);
+      }, 400);
+    };
+
+    // GitHub Login Simulation
+    document.getElementById('btn-github').onclick = () => {
+      log('[OAUTH] GitHub OAuth 2.0 PKCE flow initiated (https://github.com/login/oauth/authorize)...');
+      setTimeout(() => {
+        const user = { id: 'gh-dev-001', name: 'Octocat Dev', email: 'octocat@github.com', roles: ['DEVELOPER', 'ADMIN'], permissions: ['users:*', 'repo:all'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('🐙 [OAUTH] GitHub Sign-In success! Access Token acquired with scopes "read:user user:email".');
+        updateUI();
+      }, 400);
     };
 
     // Kakao Login Simulation
     document.getElementById('btn-kakao').onclick = () => {
       log('[OAUTH] Kakao OAuth popup opened...');
       setTimeout(() => {
-        const user = { id: 'kakao-456', name: '라이언', email: 'ryan@kakao.com', roles: ['USER'] };
+        const user = { id: 'kakao-456', name: '라이언', email: 'ryan@kakao.com', roles: ['USER'], permissions: ['users:read'] };
         authState.isAuthenticated = true;
         authState.token = createMockToken(user);
         authState.user = user;
-        log('[OAUTH] Kakao Login success! Profile and AccessToken received.');
+        log('🟡 [OAUTH] Kakao Login success! Profile and AccessToken received.');
         updateUI();
-      }, 500);
+      }, 400);
     };
 
     // Naver Login Simulation
     document.getElementById('btn-naver').onclick = () => {
       log('[OAUTH] Naver Login flow triggered...');
       setTimeout(() => {
-        const user = { id: 'naver-789', name: '네이버사용자', email: 'user@naver.com', roles: ['USER'] };
+        const user = { id: 'naver-789', name: '네이버사용자', email: 'user@naver.com', roles: ['USER'], permissions: ['users:read'] };
         authState.isAuthenticated = true;
         authState.token = createMockToken(user);
         authState.user = user;
-        log('[OAUTH] Naver Login completed.');
+        log('🟢 [OAUTH] Naver Login completed.');
         updateUI();
-      }, 500);
+      }, 400);
+    };
+
+    // Apple Login Simulation
+    document.getElementById('btn-apple').onclick = () => {
+      log('[OAUTH] Apple Sign-In SDK (AppleID.auth.signIn) prompted...');
+      setTimeout(() => {
+        const user = { id: 'apple-007', name: 'Apple Customer', email: 'privaterelay@appleid.com', roles: ['USER'], permissions: ['users:read'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('🍎 [OAUTH] Apple Sign-In success! Verified JWT id_token received.');
+        updateUI();
+      }, 400);
+    };
+
+    // Meta (Facebook) Login Simulation
+    document.getElementById('btn-meta').onclick = () => {
+      log('🌐 [OAUTH] Meta/Facebook Graph API & JS SDK (FB.login) flow initiated...');
+      setTimeout(() => {
+        const user = { id: 'fb-555', name: 'Meta User', email: 'user@facebook.com', roles: ['USER'], permissions: ['users:read'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('🔷 [OAUTH] Meta/Facebook login success! Graph API user profile synchronized.');
+        updateUI();
+      }, 400);
+    };
+
+    // Discord Login Simulation
+    document.getElementById('btn-discord').onclick = () => {
+      log('[OAUTH] Discord OAuth 2.0 PKCE window launched...');
+      setTimeout(() => {
+        const user = { id: 'discord-888', name: 'GamerDev#0001', email: 'gamer@discord.com', roles: ['USER'], permissions: ['chat:all'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('🎮 [OAUTH] Discord authentication verified! User profile synchronized.');
+        updateUI();
+      }, 400);
+    };
+
+    // LINE Login Simulation
+    document.getElementById('btn-line').onclick = () => {
+      log('[OAUTH] LINE Login v2.1 popup opened...');
+      setTimeout(() => {
+        const user = { id: 'line-321', name: 'Brown Bear', email: 'brown@line.me', roles: ['USER'], permissions: ['users:read'] };
+        authState.isAuthenticated = true;
+        authState.token = createMockToken(user);
+        authState.user = user;
+        log('💬 [OAUTH] LINE Login success! OpenID profile loaded.');
+        updateUI();
+      }, 400);
     };
 
     // Web3 SIWE Simulation
@@ -462,14 +660,61 @@
         log(`[WEB3] Wallet connected: ${address}`);
         log('[WEB3] Formatted EIP-4361 SIWE message. Requesting personal_sign...');
         setTimeout(() => {
-          const user = { id: address, name: `ENS(${address.substring(0, 8)})`, roles: ['WEB3_USER', 'ADMIN'] };
+          const user = { id: address, name: `ENS(${address.substring(0, 8)})`, roles: ['WEB3_USER', 'ADMIN'], permissions: ['users:*'] };
           authState.isAuthenticated = true;
           authState.token = createMockToken(user);
           authState.user = user;
-          log('[WEB3] Signature verified! SIWE session established.');
+          log('🌐 [WEB3] Signature verified! SIWE session established.');
           updateUI();
-        }, 600);
-      }, 400);
+        }, 500);
+      }, 300);
+    };
+
+    // World ID (Orb Verification) Simulation
+    document.getElementById('btn-world').onclick = () => {
+      log('[WORLD ID] Connecting to World App / IDKit QR Bridge...');
+      setTimeout(() => {
+        log('[WORLD ID] Requesting Orb-level Proof-of-Personhood (PoP) verification...');
+        setTimeout(() => {
+          const nullifier = '0x07f4...8921b';
+          const user = {
+            id: nullifier,
+            name: `Verified Human (${nullifier.substring(0, 8)})`,
+            roles: ['HUMAN', 'VERIFIED_ORB', 'USER'],
+            permissions: ['governance:vote', 'users:read'],
+            isHuman: true,
+            verificationLevel: 'orb'
+          };
+          authState.isAuthenticated = true;
+          authState.token = createMockToken(user);
+          authState.user = user;
+          log('👁️ [WORLD ID] ZK-SNARK Proof validated! Unique human verified via World Orb.');
+          updateUI();
+        }, 500);
+      }, 300);
+    };
+
+    // Passkey (WebAuthn) Simulation
+    document.getElementById('btn-passkey').onclick = () => {
+      log('[PASSKEY] Triggering navigator.credentials.get (FIDO2 / WebAuthn)...');
+      setTimeout(() => {
+        log('[PASSKEY] Prompting platform authenticator (Touch ID / Face ID / Windows Hello)...');
+        setTimeout(() => {
+          const user = {
+            id: 'cred-fido2-9988',
+            name: 'Biometric Authenticated User',
+            email: 'user@passkey.local',
+            roles: ['USER', 'PASSKEY_AUTHED'],
+            permissions: ['users:read', 'wallet:sign'],
+            biometric: true
+          };
+          authState.isAuthenticated = true;
+          authState.token = createMockToken(user);
+          authState.user = user;
+          log('🔑 [PASSKEY] Cryptographic assertion verified! Secure passwordless session active.');
+          updateUI();
+        }, 500);
+      }, 300);
     };
 
     // Sign out
@@ -489,22 +734,36 @@
         return;
       }
       if (authState.user.roles && authState.user.roles.includes('ADMIN')) {
-        log('✅ [GUARD PASS] ADMIN 역할 검증 완료. 보호된 리소스에 접근했습니다.');
+        log('✅ [GUARD PASS] ADMIN 역할 검증 완료. (계층/역할 일치)');
       } else {
-        log('❌ [GUARD FAIL] 403 Forbidden - ADMIN 권한이 부족합니다.');
+        log('❌ [GUARD FAIL] 403 Forbidden - ADMIN 역할이 부족합니다.');
       }
     };
 
-    // RBAC: Check Superadmin (Should fail)
-    document.getElementById('btn-check-superadmin').onclick = () => {
+    // RBAC: Wildcard Permission Check
+    document.getElementById('btn-check-wildcard').onclick = () => {
       if (!authState.isAuthenticated) {
         log('❌ [GUARD FAIL] 401 Unauthenticated - 로그인 후 시도해주세요.');
+        return;
+      }
+      const hasWildcard = (authState.user.permissions || []).some(p => p === 'users:*' || p === '*');
+      if (hasWildcard) {
+        log('✨ [GUARD PASS] Wildcard Permission Match! 보유 권한 "users:*"가 요청 권한 "users:delete"를 포괄하여 승인되었습니다.');
+      } else {
+        log('❌ [GUARD FAIL] 403 Forbidden - "users:delete" 권한이 없습니다.');
+      }
+    };
+
+    // RBAC: Check Superadmin (Should fail) & Callbacks
+    document.getElementById('btn-check-superadmin').onclick = () => {
+      if (!authState.isAuthenticated) {
+        log('❌ [GUARD FAIL] 401 Unauthenticated -> onUnauthenticated() 콜백 발동!');
         return;
       }
       if (authState.user.roles && authState.user.roles.includes('SUPERADMIN')) {
         log('✅ [GUARD PASS] SUPERADMIN 권한 승인.');
       } else {
-        log('❌ [GUARD FAIL] 403 Forbidden - SUPERADMIN 권한이 필요하지만 현재 없습니다.');
+        log('🚨 [GUARD FAIL] 403 Forbidden -> onForbidden({ missingRoles: ["SUPERADMIN"] }) & 전역 onUnauthorized() 콜백 발동!');
       }
     };
 

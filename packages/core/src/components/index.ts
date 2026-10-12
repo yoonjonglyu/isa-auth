@@ -6,6 +6,10 @@ import wechatLoginButton from './wechatLogin';
 import metaLoginButton from './metaLogin';
 import kakaoLoginButton from './kakaoLogin';
 import web3LoginButton from './web3Login';
+import githubLoginButton from './githubLogin';
+import discordLoginButton from './discordLogin';
+import worldLoginButton from './worldLogin';
+import passkeyLoginButton from './passkeyLogin';
 
 const buttons = {
   google: googleLoginButton,
@@ -15,7 +19,12 @@ const buttons = {
   line: lineLoginbutton,
   wechat: wechatLoginButton,
   meta: metaLoginButton,
+  facebook: metaLoginButton,
   web3: web3LoginButton,
+  github: githubLoginButton,
+  discord: discordLoginButton,
+  world: worldLoginButton,
+  passkey: passkeyLoginButton,
   none: null,
 };
 
@@ -41,5 +50,9 @@ export {
   wechatLoginButton,
   metaLoginButton,
   web3LoginButton,
+  githubLoginButton,
+  discordLoginButton,
+  worldLoginButton,
+  passkeyLoginButton,
 };
 export * from './loginButton';

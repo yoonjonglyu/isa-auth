@@ -1,25 +1,29 @@
 # 🚀 ISA AUTH
 
 > **A Unified, Framework-Agnostic Frontend Authentication Suite**  
-> Supporting Multi-Provider OAuth (Google, Kakao, Naver), Web3 (SIWE), Reactive Store, JWT Management, and RBAC Route Guards.
+> Supporting Multi-Provider OAuth (Google, Apple, Meta, Line, Kakao, Naver), Developer (GitHub, Discord), Web3 (SIWE), Identity (World ID Orb, Passkey WebAuthn), Reactive Store, Axios/Fetch Interceptors, and RBAC/ABAC Guards.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 [![SWC](https://img.shields.io/badge/Compiler-SWC-orange.svg)](https://swc.rs/)
+[![Bundle Size](https://img.shields.io/badge/Zero_Node_Dependencies-Web_Crypto-green.svg)](https://w3c.github.io/webcrypto/)
 
 ---
 
 ## 🌟 Why ISA AUTH?
 
-Modern web applications frequently require diverse authentication methods — from global platforms (Google, Apple) and local providers (Kakao, Naver) to decentralized blockchain identity (SIWE) and standard JWT credentials.
+Modern web applications frequently require diverse authentication methods — from global platforms (Google, Apple, Meta) and local portals (Kakao, Naver, Line) to developer communities (GitHub, Discord), decentralized Web3 wallets (SIWE), and next-generation biometric/identity systems (**World ID Orb & Passkey**).
 
 **ISA AUTH** provides an all-in-one, frontend-centric architecture that is:
 
 - **Framework-Agnostic**: Works seamlessly across Vanilla JS, React, Vue, Svelte, or Web Components.
 - **Zero Node.js Dependencies**: Pure browser-safe cryptographic & JWT utilities with zero Node runtime bloat.
-- **Built-in Reactive State & Persistence**: Lightweight pub/sub store with automatic `localStorage`/`sessionStorage` synchronization across browser tabs.
-- **Enterprise-Ready Authorization (RBAC)**: Fine-grained Role and Permission guards for protecting SPA routes and UI elements.
-- **Web3 & Modern OAuth Standard**: Native EIP-4361 (Sign-In with Ethereum) and OAuth 2.0 PKCE helpers out-of-the-box.
+- **Categorized Provider Taxonomy**: Organized into `social`, `developer`, `web3`, and `identity` domains.
+- **Next-Gen Identity & Biometrics**: Native support for **World ID (Orb Proof-of-Personhood)** and **Passkey (FIDO2 WebAuthn)**.
+- **Enterprise-Ready RBAC/ABAC**: Wildcard permission matching (`users:*`), role hierarchy inheritance, and router navigation guards.
+- **HTTP Interceptors (Axios & Fetch)**: Auto `Authorization: Bearer <token>` injection and deduplicated 401 refresh queues.
+- **Token Exchange Standard**: Standardized adapter for exchanging OAuth codes, World ID proofs, and Passkey assertions with backend APIs.
+- **Flexible Storage Modes**: Multi-tab synchronization, prefix isolation, and **HttpOnly Cookie / Hybrid BFF mode**.
 
 ---
 
@@ -35,18 +39,52 @@ pnpm add isa-auth
 
 ---
 
-## 🚀 Quick Start
+## 🏛️ Architecture & Provider Taxonomy
+
+```
+[UI Layer]           Vanilla DOM / React / Vue / Web Component (<isa-auth-button>)
+                          │
+[Unified Facade]     IsaAuth (packages/isa-auth)
+                          │
+           ┌──────────────┼──────────────┬──────────────┐
+           ▼              ▼              ▼              ▼
+     [Providers]      [Service]       [Store]       [Guards & HTTP]
+     ├─ Social        - JwtService    - Memory      - createAuthGuard (RBAC/ABAC)
+     │  (Google, Apple,- BaseService   - Local       - Wildcard & Hierarchy
+     │   Meta/FB,     - TokenExchange - Session     - Navigation Guard
+     │   Kakao, Naver,- AutoRefresh   - Cookie      - onUnauthorized Hook
+     │   LINE)        - PKCE Utils    - Tab Sync    - createAuthFetch (Auto 401)
+     ├─ Developer                                   - applyAuthInterceptor (Axios)
+     │  (GitHub, Discord)
+     ├─ Web3
+     │  (Ethereum SIWE)
+     └─ Identity
+        (World ID Orb, Passkey FIDO2)
+```
+
+| Category | Providers | Key Features |
+| :--- | :--- | :--- |
+| **`social`** | Google, Apple, Meta/Facebook, Kakao, Naver, LINE | Native SDK wrappers, OpenID Connect, OAuth 2.0 PKCE |
+| **`developer`** | GitHub, Discord | Developer OAuth 2.0 PKCE, Bot/Server authorization |
+| **`web3`** | Ethereum SIWE (EIP-4361) | EIP-1193 wallet detection, `personal_sign` signature |
+| **`identity`** | World ID (Orb), Passkey (WebAuthn/FIDO2) | ZK-SNARK Proof of Personhood, Face ID / Touch ID / Windows Hello |
+
+---
+
+## 🚀 Quick Start Recipes
 
 ### 1. Unified Authentication Instance
 
 ```typescript
 import { IsaAuth } from 'isa-auth';
 
-// Initialize with your desired provider
+// Initialize with any provider
 const auth = new IsaAuth({
-  provider: 'google', // 'google' | 'kakao' | 'naver' | 'web3' | 'jwt' | 'base'
-  clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-  storage: 'localStorage', // 'localStorage' | 'sessionStorage' | 'memory'
+  provider: 'google', // 'google' | 'apple' | 'meta' | 'github' | 'discord' | 'web3' | 'world' | 'passkey'
+  clientId: 'YOUR_CLIENT_ID',
+  callbackUrl: 'https://myapp.com/auth/callback',
+  storage: 'localStorage', // 'localStorage' | 'sessionStorage' | 'memory' | 'cookie'
+  storagePrefix: 'myapp',
 });
 
 // Render headless button to a DOM container
@@ -54,7 +92,6 @@ auth.renderButton(document.getElementById('login-container'));
 
 // Listen to authentication changes
 auth.subscribe((isAuthenticated) => {
-  console.log('Auth state changed:', isAuthenticated);
   if (isAuthenticated) {
     console.log('User Profile:', auth.getUserInfo());
     console.log('Access Token:', auth.getAccessToken());
@@ -64,96 +101,87 @@ auth.subscribe((isAuthenticated) => {
 
 ---
 
-## 🔑 5 Core Pillars
+### 2. 🌐 World ID (World Network / Orb Verification)
 
-### 1. 📦 Reactive Store & Multi-Tab Synchronization
-Built-in pub/sub store without heavyweight external dependencies. Changes in one tab automatically synchronize across all open browser tabs.
+Verify unique humanness using **World ID Orb** Proof-of-Personhood:
 
 ```typescript
-import { configureStorage, getAuthState, setAccessToken } from 'isa-auth';
+import { IsaAuth } from 'isa-auth';
 
-// Switch storage adapter
-configureStorage('localStorage');
+const worldAuth = new IsaAuth({
+  provider: 'world',
+  clientId: 'app_staging_your_app_id',
+  extraOptions: {
+    action: 'vote',
+    verificationLevel: 'orb', // 'orb' (Biometric iris scan) or 'device'
+    signal: 'user_wallet_address',
+    onSuccess: (proof) => {
+      console.log('Proof nullifier:', proof.nullifier_hash);
+      console.log('ZK-SNARK proof:', proof.proof);
+    },
+  },
+});
 
-// Set token - automatically parses payload, updates reactive store and syncs across tabs
-setAccessToken('eyJhbGciOi...');
+await worldAuth.signIn();
+const user = await worldAuth.getUserInfo();
+console.log(user.isHuman); // true
 ```
 
-### 2. 🛡️ RBAC & Route Guards
-Protect routes and UI components based on JWT claims (`roles` and `permissions`).
+---
+
+### 3. 🔑 Passkey (FIDO2 / WebAuthn Biometrics)
+
+Seamless passwordless authentication via **Face ID, Touch ID, or Windows Hello**:
 
 ```typescript
-import { createAuthGuard } from 'isa-auth';
+import { IsaAuth } from 'isa-auth';
 
-const adminGuard = createAuthGuard({
-  requireAuth: true,
-  roles: ['ADMIN'],
-  onUnauthorized: () => {
-    alert('403 Forbidden: Administrator access required.');
+const passkeyAuth = new IsaAuth({
+  provider: 'passkey',
+  extraOptions: {
+    rpName: 'My Enterprise Bank',
+    userName: 'alice@example.com',
   },
-  onUnauthenticated: () => {
+});
+
+// Authenticate with device biometrics
+await passkeyAuth.signIn();
+
+// Register a new passkey credential
+await passkeyAuth.providerInstance.registerCredential();
+```
+
+---
+
+### 4. 🔄 HTTP Interceptors (Axios & Fetch) with 401 Auto-Retry
+
+Automatically attaches `Authorization: Bearer <token>` and queues concurrent requests while refreshing expired tokens:
+
+#### Axios Interceptor:
+```typescript
+import axios from 'axios';
+import { IsaAuth } from 'isa-auth';
+
+const auth = new IsaAuth({ provider: 'jwt' });
+const apiClient = axios.create({ baseURL: 'https://api.example.com' });
+
+// Applies request/response interceptors to Axios
+auth.applyAxiosInterceptor(apiClient, {
+  refreshFn: async () => {
+    const res = await axios.post('/api/auth/refresh');
+    return res.data.accessToken;
+  },
+  onUnauthorized: () => {
     window.location.href = '/login';
   },
 });
 
-// Use inside your router (React Router, Vue Router, etc.)
-const canAccess = await adminGuard({
-  isAuthenticated: auth.isAuthenticated(),
-  roles: auth.getUserInfo()?.roles,
-});
+// All requests now have automatic Bearer token injection and 401 recovery
+const response = await apiClient.get('/users/me');
 ```
 
-### 3. 🌐 Multi-Provider OAuth (Google, Kakao, Naver)
-Standardized provider lifecycle with automatic SDK injection and popup/redirect workflows.
-
+#### Fetch Interceptor:
 ```typescript
-// Kakao Provider
-const kakaoAuth = new IsaAuth({
-  provider: 'kakao',
-  clientId: 'YOUR_KAKAO_JAVASCRIPT_KEY',
-  callbackUrl: 'https://your-domain.com/oauth/callback',
-});
-
-// Trigger login
-await kakaoAuth.signIn();
-```
-
-### 4. ⛓️ Web3 (Sign-In with Ethereum - SIWE)
-Native support for EIP-4361 compliant wallet authentication.
-
-```typescript
-const web3Auth = new IsaAuth({
-  provider: 'web3',
-  extraOptions: {
-    statement: 'Sign in with Ethereum to access the dashboard.',
-    chainId: 1,
-  },
-});
-
-// Prompts MetaMask / browser wallet to connect and sign message
-await web3Auth.signIn();
-```
-
-### 5. 🛠️ Authentication Utilities & Auto-Refresh HTTP Client
-
-```typescript
-import { 
-  createAuthFetch, 
-  decodeToken, 
-  isExpiredToken, 
-  generateCodeVerifier, 
-  generateCodeChallenge 
-} from 'isa-auth';
-
-// 1. Safe JWT decoding (pure browser)
-const { payload } = decodeToken(token);
-const expired = isExpiredToken(token);
-
-// 2. PKCE generators for secure OAuth 2.0
-const verifier = generateCodeVerifier();
-const challenge = await generateCodeChallenge(verifier);
-
-// 3. HTTP fetch with auto Bearer token and 401 refresh retry
 const authFetch = auth.createFetch({
   baseUrl: 'https://api.example.com',
   refreshFn: async () => {
@@ -163,74 +191,109 @@ const authFetch = auth.createFetch({
   },
 });
 
-// Automatically adds "Authorization: Bearer <token>" and refreshes upon 401
-const response = await authFetch('/v1/protected-data');
+const res = await authFetch('/protected/data');
 ```
 
 ---
 
-## 🎨 Framework Adapters
+### 5. 🛡️ Advanced RBAC/ABAC Guards & Navigation Guards
 
-### Vanilla JavaScript
+Supports **wildcard permission rules** (`users:*`, `*:read`, `*`) and **hierarchical role inheritance**:
+
 ```typescript
-import { renderers } from 'isa-auth';
+import { IsaAuth } from 'isa-auth';
 
-const btn = renderers.renderByJs({
-  label: 'Google 로그인',
-  onClick: () => auth.signIn(),
+const auth = new IsaAuth({ provider: 'jwt' });
+
+// Instant wildcard check
+auth.can('users:read');       // true if user has 'users:*' or '*'
+auth.is('ADMIN');             // role check
+
+// Navigation Guard for React Router / Vue Router
+const navGuard = auth.createNavigationGuard({
+  requireAuth: true,
+  roles: ['ADMIN'],
+  roleHierarchy: {
+    SUPERUSER: ['ADMIN', 'MANAGER'],
+    ADMIN: ['USER'],
+  },
+  permissions: ['reports:read'],
+  redirectToOnUnauthenticated: '/login',
+  redirectToOnUnauthorized: '/forbidden',
+  onRedirect: (path) => router.push(path),
 });
-document.body.appendChild(btn);
-```
 
-### React
-```tsx
-import { renderers } from 'isa-auth';
-
-export function LoginButton() {
-  return renderers.renderByReact({
-    label: 'Sign In',
-    onClick: () => auth.signIn(),
-  });
+// Use inside router beforeEach hook
+const result = await navGuard();
+if (!result.allowed) {
+  console.warn('Denied reason:', result.reason);
 }
 ```
 
-### Web Component
-```html
-<script type="module">
-  import { renderers } from 'isa-auth';
-  renderers.registerWebComponent();
-</script>
+---
 
-<isa-auth-button label="Sign In with ISA"></isa-auth-button>
+### 6. 🔌 Backend Token Exchange Adapter
+
+Standardized bridge for exchanging OAuth authorization codes, World ID proofs, and Passkey assertions with your backend API:
+
+```typescript
+import { IsaAuth } from 'isa-auth';
+
+const auth = new IsaAuth({ provider: 'github' });
+const exchange = auth.createTokenExchange('/api/auth/token-exchange');
+
+// 1. Exchange OAuth code for backend JWT
+const tokenRes = await exchange.exchangeOAuthCode('github', 'oauth_code_123');
+auth.setAccessToken(tokenRes.accessToken);
+
+// 2. Exchange World ID ZK-Proof for backend session
+const worldRes = await exchange.exchangeWorldProof(worldProof);
+auth.setAccessToken(worldRes.accessToken);
 ```
 
 ---
 
-## 🧪 Testing the Playground
+### 7. 🛡️ Storage Modes: Security-First Defaults
 
-Run the interactive local demo to experiment with all features:
+By default, `isa-auth` uses **`'memory'`** storage to ensure sensitive tokens are never exposed to XSS attacks via browser localStorage:
+
+```typescript
+// 1. [PRODUCTION DEFAULT] Zero XSS In-Memory Storage
+const secureAuth = new IsaAuth({
+  provider: 'jwt',
+  storage: 'memory', // Default! (No tokens in localStorage)
+});
+
+// 2. [PRODUCTION RECOMMENDED] HttpOnly Cookie / BFF Mode
+const cookieAuth = new IsaAuth({
+  provider: 'base',
+  storage: 'cookie', // CookieSessionStorageAdapter (BFF architecture)
+});
+
+// 3. [LOCAL DEV ONLY] Insecure LocalStorage for F5 Refresh Convenience
+const devAuth = new IsaAuth({
+  provider: 'google',
+  clientId: 'dev-client-id',
+  storage: 'dev_insecure_localStorage', // Explicitly warns in console that this is NOT for production!
+});
+```
+
+---
+
+## 🧪 Interactive Playground & Testing
+
+Run the local playground to test all 11 providers, World ID Orb, Passkey, and guards interactively:
 
 ```bash
-# Build packages
-yarn build
+# 1. Build monorepo
+yarn build    # or Windows: yarn.cmd build
 
-# Start interactive playground
+# 2. Run test suite (22 unit & integration tests)
+node scratch/test_enhanced_features.js
+
+# 3. Launch interactive playground
 yarn demo
-# Visit http://localhost:3000 in your browser
-```
-
----
-
-## 📁 Repository Structure
-
-```
-isa-auth/
-├── packages/
-│   ├── core/           # @isa-auth/core: JWT, Store, Providers, Guards, HTTP Interceptor
-│   ├── isa-auth/       # isa-auth: Unified Facade, Multi-Framework Renderers
-│   └── demo/           # Interactive Web Playground
-├── package.json        # Workspace Monorepo
-└── README.md
+# Open http://localhost:3000 in your browser
 ```
 
 ---

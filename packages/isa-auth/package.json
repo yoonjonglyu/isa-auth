@@ -1,23 +1,35 @@
 {
   "name": "isa-auth",
-  "version": "0.1.0",
-  "description": "Unified, framework-agnostic frontend authentication library supporting OAuth (Google, Kakao, Naver), Web3 (SIWE), JWT, reactive store, and RBAC guards",
+  "version": "0.2.0",
+  "description": "Unified, framework-agnostic frontend authentication library supporting OAuth (Google, Apple, Meta, Line, Kakao, Naver), Developer (GitHub, Discord), Web3 (SIWE), Identity (World ID Orb, Passkey WebAuthn), reactive store, and RBAC guards with AI Agent skills",
   "keywords": [
     "auth",
     "authentication",
     "oauth",
     "oauth2",
     "google-auth",
+    "apple-auth",
+    "meta-auth",
     "kakao-auth",
     "naver-auth",
+    "line-auth",
+    "github-auth",
+    "discord-auth",
     "web3",
     "siwe",
+    "world-id",
+    "worldcoin",
+    "passkey",
+    "webauthn",
+    "fido2",
     "jwt",
     "rbac",
     "headless",
     "react",
     "vue",
-    "svelte"
+    "svelte",
+    "skills",
+    "agent-skill"
   ],
   "author": "Isa <yunjonglyu@gmail.com> (yunjongryu)",
   "homepage": "https://github.com/yoonjonglyu/isa-auth#readme",
@@ -30,10 +42,15 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "skills",
+    ".agents",
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
     "type": "git",
@@ -47,7 +64,7 @@
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"
   },
   "dependencies": {
-    "isa-util": "latest"
+    "isa-util": "^1.1.1"
   },
   "devDependencies": {
     "@swc/cli": "^0.7.7",
