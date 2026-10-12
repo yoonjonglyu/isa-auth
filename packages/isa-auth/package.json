@@ -1,6 +1,6 @@
 {
   "name": "isa-auth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Unified, framework-agnostic frontend authentication library supporting OAuth (Google, Apple, Meta, Line, Kakao, Naver), Developer (GitHub, Discord), Web3 (SIWE), Identity (World ID Orb, Passkey WebAuthn), reactive store, and RBAC guards with AI Agent skills",
   "keywords": [
     "auth",

@@ -74,21 +74,60 @@ pnpm add isa-auth
 
 ## 🚀 Quick Start Recipes
 
-### 1. Unified Authentication Instance
+### 1. Multi-Provider All-in-One Configuration (Recommended)
+
+Manage multiple social logins, developer platforms, and Web3/Passkey authentication simultaneously in a single application instance:
 
 ```typescript
 import { IsaAuth } from 'isa-auth';
 
-// Initialize with any provider
+// 1. Initialize with multiple providers at once
+const auth = new IsaAuth({
+  storage: 'memory', // Production security default
+  providers: {
+    google: { clientId: 'GOOGLE_CLIENT_ID', callbackUrl: 'https://myapp.com/callback' },
+    kakao: { clientId: 'KAKAO_JAVASCRIPT_KEY', callbackUrl: 'https://myapp.com/callback' },
+    apple: { clientId: 'com.myapp.service', callbackUrl: 'https://myapp.com/callback' },
+    github: { clientId: 'GITHUB_CLIENT_ID', callbackUrl: 'https://myapp.com/callback' },
+    passkey: { rpName: 'My App', rpId: 'myapp.com' },
+  },
+});
+
+// 2-A. Trigger a specific provider login programmatically
+await auth.signIn('kakao');
+// or
+await auth.signIn('google');
+
+// 2-B. Render individual provider button
+auth.renderButton('github', document.getElementById('github-btn-slot'));
+
+// 2-C. Render all buttons at once with customizable layout (grid / column / row)
+auth.renderAllButtons(document.getElementById('social-login-container'), {
+  direction: 'grid', // 'grid' | 'column' | 'row'
+  gap: '12px',
+});
+
+// 3. Inspect registered providers
+console.log(auth.getRegisteredProviders()); // ['google', 'kakao', 'apple', 'github', 'passkey']
+```
+
+---
+
+### 1-B. Single-Provider Configuration (Legacy & Simple Apps)
+
+```typescript
+import { IsaAuth } from 'isa-auth';
+
+// Initialize with a single provider
 const auth = new IsaAuth({
   provider: 'google', // 'google' | 'apple' | 'meta' | 'github' | 'discord' | 'web3' | 'world' | 'passkey'
   clientId: 'YOUR_CLIENT_ID',
   callbackUrl: 'https://myapp.com/auth/callback',
-  storage: 'localStorage', // 'localStorage' | 'sessionStorage' | 'memory' | 'cookie'
+  storage: 'memory',
   storagePrefix: 'myapp',
 });
 
-// Render headless button to a DOM container
+// Render button to a DOM container
 auth.renderButton(document.getElementById('login-container'));
 
 // Listen to authentication changes

@@ -25,6 +25,38 @@ This skill provides full reference, architecture details, and copy-paste recipes
 
 ## 🚀 2. Code Recipes
 
+### Recipe 0: Multi-Provider All-in-One Configuration (Recommended)
+```typescript
+import { IsaAuth } from 'isa-auth';
+
+// 1. Initialize multiple providers simultaneously
+const auth = new IsaAuth({
+  storage: 'memory', // Production security default
+  providers: {
+    google: { clientId: 'GOOGLE_CLIENT_ID', callbackUrl: 'https://myapp.com/callback' },
+    kakao: { clientId: 'KAKAO_JAVASCRIPT_KEY', callbackUrl: 'https://myapp.com/callback' },
+    apple: { clientId: 'com.myapp.service', callbackUrl: 'https://myapp.com/callback' },
+    github: { clientId: 'GITHUB_CLIENT_ID', callbackUrl: 'https://myapp.com/callback' },
+    passkey: { rpName: 'My Enterprise App', rpId: 'myapp.com' },
+  },
+});
+
+// 2. Trigger individual provider login
+await auth.signIn('kakao');
+// or
+await auth.signIn('google');
+
+// 3. Render buttons: individual or all at once
+auth.renderButton('github', document.getElementById('gh-slot'));
+auth.renderAllButtons(document.getElementById('social-login-grid'), {
+  direction: 'grid', // 'grid' | 'column' | 'row'
+  gap: '12px',
+});
+
+// 4. Query registered providers
+console.log(auth.getRegisteredProviders()); // ['google', 'kakao', 'apple', 'github', 'passkey']
+```
+
 ### Recipe A: World ID (World Network / Orb Verification)
 ```typescript
 import { IsaAuth } from 'isa-auth';

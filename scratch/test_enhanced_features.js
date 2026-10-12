@@ -18,6 +18,7 @@ const {
   identityProviders,
   getProvidersByCategory,
   getProviderCategory,
+  KakaoAuthProvider,
   GithubAuthProvider,
   AppleAuthProvider,
   DiscordAuthProvider,
@@ -611,5 +612,104 @@ async function asyncTest(name, fn) {
     assert.strictEqual(worldRes.user.isHuman, true);
   });
 
+  // Test Group 14: Multi-Provider Unified Registry & Dispatch
+  await asyncTest('MultiProvider - Multi-provider initialization, dispatch & button rendering', async () => {
+    let invokedProvider = null;
+    const auth = new IsaAuth({
+      providers: {
+        google: { clientId: 'google-client-multi', callbackUrl: 'http://localhost/cb' },
+        kakao: { clientId: 'kakao-client-multi', callbackUrl: 'http://localhost/cb' },
+        github: { clientId: 'github-client-multi', callbackUrl: 'http://localhost/cb' },
+        passkey: { rpName: 'Isa Demo', rpId: 'localhost' },
+      },
+    });
+
+    // 1. Registered providers check
+    const registered = auth.getRegisteredProviders();
+    assert.deepStrictEqual(registered, ['google', 'kakao', 'github', 'passkey']);
+
+    // 2. Provider instance getter check
+    const kakaoInstance = auth.getProviderInstance('kakao');
+    assert.strictEqual(kakaoInstance instanceof KakaoAuthProvider, true);
+
+    const githubInstance = auth.getProviderInstance('github');
+    assert.strictEqual(githubInstance instanceof GithubAuthProvider, true);
+
+    // 3. Dispatch check: mock signIn on kakaoInstance
+    kakaoInstance.signIn = async () => {
+      invokedProvider = 'kakao';
+    };
+    await auth.signIn('kakao');
+    assert.strictEqual(invokedProvider, 'kakao');
+
+    // 4. Dispatch error on unregistered provider
+    let threw = false;
+    try {
+      await auth.signIn('discord');
+    } catch (err) {
+      threw = true;
+      assert.strictEqual(err.message.includes("is not registered in this IsaAuth instance"), true);
+    }
+    assert.strictEqual(threw, true);
+
+    // 5. Button Rendering: Mock DOM Document & Container
+    global.document = {
+      createElement: (tag) => ({
+        tagName: tag.toUpperCase(),
+        dataset: {},
+        style: {},
+        className: '',
+        innerText: '',
+        appendChild: function(child) {
+          this.children = this.children || [];
+          this.children.push(child);
+        },
+        addEventListener: () => {},
+      }),
+    };
+
+    const mockContainer = {
+      children: [],
+      appendChild(el) {
+        this.children.push(el);
+      },
+    };
+
+    // renderButton with provider name
+    const ghBtn = auth.renderButton('github', mockContainer);
+    assert.strictEqual(mockContainer.children.length, 1);
+    assert.strictEqual(ghBtn.tagName, 'BUTTON');
+    assert.strictEqual(ghBtn.dataset.provider, 'github');
+
+    // renderAllButtons
+    const multiContainer = {
+      children: [],
+      appendChild(el) {
+        this.children.push(el);
+      },
+      style: {},
+    };
+    const renderedButtons = auth.renderAllButtons(multiContainer, { direction: 'grid' });
+    assert.strictEqual(renderedButtons.length, 4);
+    assert.strictEqual(multiContainer.children.length, 1);
+    const wrapper = multiContainer.children[0];
+    assert.strictEqual(wrapper.style.display, 'grid');
+    assert.strictEqual(wrapper.children.length, 4);
+  });
+
+  // Test Group 15: Backward Compatibility with Single-Provider IsaAuth
+  test('MultiProvider - Backward compatibility with single-provider mode', () => {
+    const singleAuth = new IsaAuth({
+      provider: 'google',
+      clientId: 'google-single-client',
+      callbackUrl: 'http://localhost/cb',
+    });
+
+    assert.strictEqual(singleAuth.config.provider, 'google');
+    assert.deepStrictEqual(singleAuth.getRegisteredProviders(), ['google']);
+    assert.strictEqual(singleAuth.getProviderInstance('google') !== undefined, true);
+  });
+
   console.log(`\nAll ${passedTests} tests passed successfully!`);
 })();
+
