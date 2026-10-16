@@ -8,6 +8,7 @@
     "build:core": "yarn --cwd packages/core build && yarn --cwd packages/core type",
     "build:auth": "yarn --cwd packages/isa-auth build",
     "build": "yarn build:core && yarn build:auth",
+    "test": "node tests/integration.test.js",
     "demo": "node packages/demo/server.js"
   },
   "dependencies": {},

@@ -286,6 +286,10 @@ export class IsaAuth {
   }
 
   getUserInfo() {
+    const storeInfo = this.core.getService().getAuthInfo();
+    if (storeInfo && Object.keys(storeInfo).length > 0) {
+      return storeInfo;
+    }
     return this.authProvider.getUserInfo();
   }
 

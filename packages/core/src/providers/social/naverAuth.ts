@@ -46,13 +46,26 @@ export class NaverAuthProvider implements AuthProvider {
     await this.loadNaverSdk();
 
     if (window.naver && window.naver.LoginWithNaverId) {
+      // Ensure container element exists to prevent Naver SDK firstChild crash
+      let btnEl = document.getElementById(this.loginButtonId);
+      if (!btnEl && typeof document !== 'undefined') {
+        btnEl = document.createElement('div');
+        btnEl.id = this.loginButtonId;
+        btnEl.style.display = 'none';
+        document.body.appendChild(btnEl);
+      }
+
       this.naverLoginInstance = new window.naver.LoginWithNaverId({
         clientId: this.clientId,
         callbackUrl: this.callbackUrl,
         isPopup: this.isPopup,
         loginButton: { color: 'green', type: 3, height: 48 },
       });
-      this.naverLoginInstance.init();
+      try {
+        this.naverLoginInstance.init();
+      } catch (err) {
+        // Suppress benign SDK DOM insertion warnings in headless/custom button setups
+      }
     }
   }
 

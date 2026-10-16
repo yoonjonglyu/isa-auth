@@ -8,5 +8,5 @@ export default defineConfig({
   sourcemap: true,
   minify: false,
   splitting: false,
-  noExternal: ['isa-auth-core'],
+  noExternal: ['isa-auth-core', 'isa-util'],
 });

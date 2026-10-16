@@ -74,6 +74,8 @@ pnpm add isa-auth
 
 ## 🚀 Quick Start Recipes
 
+> 💡 **Developer Keys Setup**: Need help obtaining Client IDs, API Keys or configuring Redirect URIs? Check out our complete [Provider Environment Setup Guide](../../docs/ENV_SETUP.md).
+
 ### 1. Multi-Provider All-in-One Configuration (Recommended)
 
 Manage multiple social logins, developer platforms, and Web3/Passkey authentication simultaneously in a single application instance:

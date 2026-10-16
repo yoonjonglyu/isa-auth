@@ -53,34 +53,42 @@ export class GoogleAuthProvider implements AuthProvider {
   }
 
   signOut() {
-    if (typeof window !== 'undefined' && window.google) {
-      window.google.accounts.id.revoke('EMAIL', () => {
-        console.log('User signed out');
-      });
-      window.google.accounts.oauth2.revokeAccessToken();
-    } else {
-      console.error('Google SDK is not loaded');
+    if (typeof window !== 'undefined' && window.google?.accounts) {
+      try {
+        if (typeof window.google.accounts.id?.disableAutoSelect === 'function') {
+          window.google.accounts.id.disableAutoSelect();
+        }
+      } catch (e) {
+        // ignore
+      }
+      try {
+        if (typeof window.google.accounts.oauth2?.revokeAccessToken === 'function') {
+          window.google.accounts.oauth2.revokeAccessToken();
+        }
+      } catch (e) {
+        // ignore
+      }
     }
   }
 
   async getAccessToken() {
-    if (typeof window !== 'undefined' && window.google) {
-      const token = await window.google.accounts.oauth2.getAccessToken();
-      return token;
-    } else {
-      console.error('Google SDK is not loaded');
-      return null;
+    if (typeof window !== 'undefined' && window.google?.accounts?.oauth2) {
+      if (typeof window.google.accounts.oauth2.getAccessToken === 'function') {
+        const token = await window.google.accounts.oauth2.getAccessToken();
+        return token;
+      }
     }
+    return null;
   }
 
   async getUserInfo() {
-    if (typeof window !== 'undefined' && window.google) {
-      const user = await window.google.accounts.id.getUserInfo();
-      return user;
-    } else {
-      console.error('Google SDK is not loaded');
-      return null;
+    if (typeof window !== 'undefined' && window.google?.accounts?.id) {
+      if (typeof window.google.accounts.id.getUserInfo === 'function') {
+        const user = await window.google.accounts.id.getUserInfo();
+        return user;
+      }
     }
+    return null;
   }
 }
 

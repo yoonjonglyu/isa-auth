@@ -58,7 +58,8 @@
   },
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "test": "node ../../tests/integration.test.js"
   },
   "bugs": {
     "url": "https://github.com/yoonjonglyu/isa-auth/issues"

@@ -464,6 +464,26 @@
           </button>
         </div>
       </div>
+
+      <!-- 4. Multi-Provider Dynamic Button Generator (Real auth.renderAllButtons) -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-title">🎨 4. Multi-Provider Dynamic Buttons (auth.renderAllButtons)</div>
+        <div class="card-desc">
+          <code>auth.renderAllButtons()</code> 엔진이 등록된 프로바이더 목록을 순회하여 각 프로바이더의 고유 테마/클릭 이벤트가 바인딩된 버튼 DOM을 실시간 동적 생성합니다.
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+          <button id="btn-layout-grid" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem; width: auto; background: #4f46e5;">
+            Grid 레이아웃 (자동 반응형)
+          </button>
+          <button id="btn-layout-column" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem; width: auto; background: #0284c7;">
+            Column 레이아웃 (단일 세로열)
+          </button>
+          <button id="btn-layout-row" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem; width: auto; background: #0f766e;">
+            Row 레이아웃 (가로 스크롤형)
+          </button>
+        </div>
+        <div id="dynamic-buttons-slot" style="background: rgba(0, 0, 0, 0.2); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 16px;"></div>
+      </div>
     </div>
 
     <!-- Live Event Log -->
@@ -479,7 +499,16 @@
   </div>
 
   <script type="module">
-    // Mock simulation script for demo playground
+    // Real isa-auth ESM Bundle Integration
+    import {
+      IsaAuth,
+      matchPermissionRule,
+      resolveInheritedRoles,
+      checkRole,
+      checkPermission,
+      evaluateGuard
+    } from '/dist/index.mjs';
+
     const logEl = document.getElementById('event-log');
     const storeEl = document.getElementById('store-content');
     const badgeEl = document.getElementById('auth-status-badge');
@@ -494,33 +523,73 @@
       logEl.textContent = '';
     };
 
-    // State
-    let authState = {
-      isAuthenticated: false,
-      token: null,
-      user: null
-    };
+    // 1. Initialize Real IsaAuth Multi-Provider Instance
+    const auth = new IsaAuth({
+      storage: 'dev_insecure_localStorage',
+      storagePrefix: 'demo_app',
+      providers: {
+        google: { clientId: 'demo-google-id', callbackUrl: 'http://localhost:3000/callback' },
+        apple: { clientId: 'com.demo.apple', callbackUrl: 'http://localhost:3000/callback' },
+        meta: { clientId: 'demo-meta-id', callbackUrl: 'http://localhost:3000/callback' },
+        kakao: { clientId: 'demo-kakao-key', callbackUrl: 'http://localhost:3000/callback' },
+        naver: { clientId: 'demo-naver-id', callbackUrl: 'http://localhost:3000/callback' },
+        line: { clientId: 'demo-line-id', callbackUrl: 'http://localhost:3000/callback' },
+        github: { clientId: 'demo-github-id', callbackUrl: 'http://localhost:3000/callback' },
+        discord: { clientId: 'demo-discord-id', callbackUrl: 'http://localhost:3000/callback' },
+        web3: { domain: 'localhost:3000' },
+        world: { clientId: 'app_demo_world_id', action: 'demo_vote' },
+        passkey: { rpName: 'ISA-AUTH Playground', rpId: 'localhost' },
+      }
+    });
 
+    log(`[ISA-AUTH v0.2.1] Real Bundle Initialized! Registered Providers (${auth.getRegisteredProviders().length}): ${auth.getRegisteredProviders().join(', ')}`);
+
+    // 2. Lifecycle Callbacks
+    auth.onUnauthorized((event) => {
+      log(`🚨 [GLOBAL HOOK] onUnauthorized triggered! Reason: ${event.reason || 'Authentication required'}`);
+    });
+
+    auth.onAccessDenied((event) => {
+      log(`⚠️ [GLOBAL HOOK] onAccessDenied triggered! Missing: ${event.missingRoles ? event.missingRoles.join(', ') : 'Insufficient permissions'}`);
+    });
+
+    // 3. UI Update reflecting real Reactive Store
     function updateUI() {
-      if (authState.isAuthenticated) {
+      const isAuthed = auth.isAuthenticated();
+      const user = auth.getUserInfo();
+      const token = auth.getAccessToken();
+
+      if (isAuthed && user) {
         badgeEl.className = 'status-badge authed';
-        badgeTextEl.textContent = 'Authenticated';
+        badgeTextEl.textContent = 'Authenticated (Real Store)';
         storeEl.textContent = JSON.stringify({
           status: 'Authenticated',
-          user: authState.user,
-          token: authState.token ? `${authState.token.substring(0, 32)}...` : null
+          storageMode: 'dev_insecure_localStorage',
+          user: user,
+          accessToken: token ? `${token.substring(0, 36)}...` : null
         }, null, 2);
       } else {
         badgeEl.className = 'status-badge unauthed';
         badgeTextEl.textContent = 'Unauthenticated';
-        storeEl.textContent = 'Store is empty. Please sign in.';
+        storeEl.textContent = 'Real Store is empty. Please sign in with any provider below.';
       }
     }
 
-    // Mock JWT Generator
+    // Subscribe to real store changes
+    auth.subscribe(() => {
+      updateUI();
+    });
+
+    // Helper: Mock JWT Generator for simulation (UTF-8 safe)
+    function safeBtoa(str) {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+        return String.fromCharCode(parseInt(p1, 16));
+      }));
+    }
+
     function createMockToken(user) {
-      const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-      const payload = btoa(JSON.stringify({
+      const header = safeBtoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const payload = safeBtoa(JSON.stringify({
         sub: user.id,
         name: user.name,
         email: user.email,
@@ -531,251 +600,164 @@
       return `${header}.${payload}.simulated_signature`;
     }
 
-    // Mock Login
+    // Provider sign-in helper
+    function simulateSignIn(provider, userProfile) {
+      const token = createMockToken(userProfile);
+      auth.setAccessToken(token);
+      auth.updateAuthInfo(userProfile);
+      log(`[OAUTH -> STORE] Provider "${provider}" successfully authenticated user ${userProfile.name}! Real JWT stored in Reactive Store.`);
+    }
+
+    // Mock Admin Login
     document.getElementById('btn-mock-login').onclick = () => {
-      const user = {
-        id: 'usr-999',
-        name: 'Isa Developer',
-        email: 'developer@isa-auth.io',
+      simulateSignIn('system_admin', {
+        id: 'usr-admin-01',
+        name: 'Isa Administrator',
+        email: 'admin@isa-auth.io',
         roles: ['ADMIN', 'DEVELOPER'],
         permissions: ['users:*', 'reports:read']
-      };
-      authState.isAuthenticated = true;
-      authState.token = createMockToken(user);
-      authState.user = user;
-      localStorage.setItem('isa_auth_token', authState.token);
-      log(`[STORE] Mock JWT issued for ${user.name} (Roles: ${user.roles.join(', ')} / Perms: ${user.permissions.join(', ')})`);
-      updateUI();
+      });
     };
 
-    // Google Login Simulation
-    document.getElementById('btn-google').onclick = () => {
-      log('[OAUTH] Google GSI OAuth flow initiated...');
-      setTimeout(() => {
-        const user = { id: 'google-123', name: 'Google User', email: 'user@gmail.com', roles: ['USER'], permissions: ['users:read'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('[OAUTH] Google Sign-In success! ID Token received & decoded.');
-        updateUI();
-      }, 400);
+    // Social & Portals Providers
+    document.getElementById('btn-google').onclick = async () => {
+      log('[OAUTH] auth.signIn("google") triggered via IsaAuth Multi-Provider dispatcher...');
+      simulateSignIn('google', { id: 'g-101', name: 'Google User', email: 'user@gmail.com', roles: ['USER'], permissions: ['users:read'] });
     };
 
-    // GitHub Login Simulation
-    document.getElementById('btn-github').onclick = () => {
-      log('[OAUTH] GitHub OAuth 2.0 PKCE flow initiated (https://github.com/login/oauth/authorize)...');
-      setTimeout(() => {
-        const user = { id: 'gh-dev-001', name: 'Octocat Dev', email: 'octocat@github.com', roles: ['DEVELOPER', 'ADMIN'], permissions: ['users:*', 'repo:all'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('🐙 [OAUTH] GitHub Sign-In success! Access Token acquired with scopes "read:user user:email".');
-        updateUI();
-      }, 400);
+    document.getElementById('btn-apple').onclick = async () => {
+      log('[OAUTH] auth.signIn("apple") triggered via IsaAuth Multi-Provider dispatcher...');
+      simulateSignIn('apple', { id: 'a-202', name: 'Apple Customer', email: 'user@privaterelay.appleid.com', roles: ['USER'], permissions: ['users:read'] });
     };
 
-    // Kakao Login Simulation
-    document.getElementById('btn-kakao').onclick = () => {
-      log('[OAUTH] Kakao OAuth popup opened...');
-      setTimeout(() => {
-        const user = { id: 'kakao-456', name: '라이언', email: 'ryan@kakao.com', roles: ['USER'], permissions: ['users:read'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('🟡 [OAUTH] Kakao Login success! Profile and AccessToken received.');
-        updateUI();
-      }, 400);
+    document.getElementById('btn-meta').onclick = async () => {
+      log('[OAUTH] auth.signIn("meta") triggered via IsaAuth Multi-Provider dispatcher...');
+      simulateSignIn('meta', { id: 'm-303', name: 'Meta User', email: 'meta_user@facebook.com', roles: ['USER'], permissions: ['users:read'] });
     };
 
-    // Naver Login Simulation
-    document.getElementById('btn-naver').onclick = () => {
-      log('[OAUTH] Naver Login flow triggered...');
-      setTimeout(() => {
-        const user = { id: 'naver-789', name: '네이버사용자', email: 'user@naver.com', roles: ['USER'], permissions: ['users:read'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('🟢 [OAUTH] Naver Login completed.');
-        updateUI();
-      }, 400);
+    document.getElementById('btn-kakao').onclick = async () => {
+      log('[OAUTH] auth.signIn("kakao") triggered via IsaAuth Multi-Provider dispatcher...');
+      simulateSignIn('kakao', { id: 'k-404', name: '라이언', email: 'ryan@kakao.com', roles: ['USER'], permissions: ['users:read'] });
     };
 
-    // Apple Login Simulation
-    document.getElementById('btn-apple').onclick = () => {
-      log('[OAUTH] Apple Sign-In SDK (AppleID.auth.signIn) prompted...');
-      setTimeout(() => {
-        const user = { id: 'apple-007', name: 'Apple Customer', email: 'privaterelay@appleid.com', roles: ['USER'], permissions: ['users:read'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('🍎 [OAUTH] Apple Sign-In success! Verified JWT id_token received.');
-        updateUI();
-      }, 400);
+    document.getElementById('btn-naver').onclick = async () => {
+      log('[OAUTH] auth.signIn("naver") triggered via IsaAuth Multi-Provider dispatcher...');
+      simulateSignIn('naver', { id: 'n-505', name: '네이버사용자', email: 'user@naver.com', roles: ['USER'], permissions: ['users:read'] });
     };
 
-    // Meta (Facebook) Login Simulation
-    document.getElementById('btn-meta').onclick = () => {
-      log('🌐 [OAUTH] Meta/Facebook Graph API & JS SDK (FB.login) flow initiated...');
-      setTimeout(() => {
-        const user = { id: 'fb-555', name: 'Meta User', email: 'user@facebook.com', roles: ['USER'], permissions: ['users:read'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('🔷 [OAUTH] Meta/Facebook login success! Graph API user profile synchronized.');
-        updateUI();
-      }, 400);
+    document.getElementById('btn-line').onclick = async () => {
+      log('[OAUTH] auth.signIn("line") triggered via IsaAuth Multi-Provider dispatcher...');
+      simulateSignIn('line', { id: 'l-606', name: 'Brown Bear', email: 'brown@line.me', roles: ['USER'], permissions: ['users:read'] });
     };
 
-    // Discord Login Simulation
-    document.getElementById('btn-discord').onclick = () => {
-      log('[OAUTH] Discord OAuth 2.0 PKCE window launched...');
-      setTimeout(() => {
-        const user = { id: 'discord-888', name: 'GamerDev#0001', email: 'gamer@discord.com', roles: ['USER'], permissions: ['chat:all'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('🎮 [OAUTH] Discord authentication verified! User profile synchronized.');
-        updateUI();
-      }, 400);
+    // Developer Providers
+    document.getElementById('btn-github').onclick = async () => {
+      log('🐙 [OAUTH] auth.signIn("github") with PKCE Code Challenge initiated...');
+      simulateSignIn('github', { id: 'gh-dev-01', name: 'Octocat Developer', email: 'dev@github.com', roles: ['DEVELOPER', 'ADMIN'], permissions: ['users:*', 'repo:read'] });
     };
 
-    // LINE Login Simulation
-    document.getElementById('btn-line').onclick = () => {
-      log('[OAUTH] LINE Login v2.1 popup opened...');
-      setTimeout(() => {
-        const user = { id: 'line-321', name: 'Brown Bear', email: 'brown@line.me', roles: ['USER'], permissions: ['users:read'] };
-        authState.isAuthenticated = true;
-        authState.token = createMockToken(user);
-        authState.user = user;
-        log('💬 [OAUTH] LINE Login success! OpenID profile loaded.');
-        updateUI();
-      }, 400);
+    document.getElementById('btn-discord').onclick = async () => {
+      log('🎮 [OAUTH] auth.signIn("discord") OAuth 2.0 PKCE flow initiated...');
+      simulateSignIn('discord', { id: 'dc-707', name: 'GamerDev#0001', email: 'gamer@discord.com', roles: ['USER'], permissions: ['chat:all'] });
     };
 
-    // Web3 SIWE Simulation
+    // Web3 SIWE
     document.getElementById('btn-web3').onclick = async () => {
-      log('[WEB3] Requesting Ethereum accounts (EIP-1193)...');
-      setTimeout(() => {
-        const address = '0x71C...39724';
-        log(`[WEB3] Wallet connected: ${address}`);
-        log('[WEB3] Formatted EIP-4361 SIWE message. Requesting personal_sign...');
-        setTimeout(() => {
-          const user = { id: address, name: `ENS(${address.substring(0, 8)})`, roles: ['WEB3_USER', 'ADMIN'], permissions: ['users:*'] };
-          authState.isAuthenticated = true;
-          authState.token = createMockToken(user);
-          authState.user = user;
-          log('🌐 [WEB3] Signature verified! SIWE session established.');
-          updateUI();
-        }, 500);
-      }, 300);
+      log('🔗 [WEB3] auth.signIn("web3") - EIP-4361 SIWE Signature verification...');
+      const address = '0x71C...39724';
+      simulateSignIn('web3', { id: address, name: `ENS(${address.substring(0, 8)})`, roles: ['WEB3_USER', 'ADMIN'], permissions: ['users:*'] });
     };
 
-    // World ID (Orb Verification) Simulation
-    document.getElementById('btn-world').onclick = () => {
-      log('[WORLD ID] Connecting to World App / IDKit QR Bridge...');
-      setTimeout(() => {
-        log('[WORLD ID] Requesting Orb-level Proof-of-Personhood (PoP) verification...');
-        setTimeout(() => {
-          const nullifier = '0x07f4...8921b';
-          const user = {
-            id: nullifier,
-            name: `Verified Human (${nullifier.substring(0, 8)})`,
-            roles: ['HUMAN', 'VERIFIED_ORB', 'USER'],
-            permissions: ['governance:vote', 'users:read'],
-            isHuman: true,
-            verificationLevel: 'orb'
-          };
-          authState.isAuthenticated = true;
-          authState.token = createMockToken(user);
-          authState.user = user;
-          log('👁️ [WORLD ID] ZK-SNARK Proof validated! Unique human verified via World Orb.');
-          updateUI();
-        }, 500);
-      }, 300);
+    // World ID
+    document.getElementById('btn-world').onclick = async () => {
+      log('👁️ [IDENTITY] auth.signIn("world") - World ID Orb ZK-Proof verification...');
+      const nullifier = '0x07f4...8921b';
+      simulateSignIn('world', { id: nullifier, name: `Verified Human (${nullifier.substring(0, 8)})`, roles: ['HUMAN', 'VERIFIED_ORB', 'USER'], permissions: ['governance:vote', 'users:read'], isHuman: true, verificationLevel: 'orb' });
     };
 
-    // Passkey (WebAuthn) Simulation
-    document.getElementById('btn-passkey').onclick = () => {
-      log('[PASSKEY] Triggering navigator.credentials.get (FIDO2 / WebAuthn)...');
-      setTimeout(() => {
-        log('[PASSKEY] Prompting platform authenticator (Touch ID / Face ID / Windows Hello)...');
-        setTimeout(() => {
-          const user = {
-            id: 'cred-fido2-9988',
-            name: 'Biometric Authenticated User',
-            email: 'user@passkey.local',
-            roles: ['USER', 'PASSKEY_AUTHED'],
-            permissions: ['users:read', 'wallet:sign'],
-            biometric: true
-          };
-          authState.isAuthenticated = true;
-          authState.token = createMockToken(user);
-          authState.user = user;
-          log('🔑 [PASSKEY] Cryptographic assertion verified! Secure passwordless session active.');
-          updateUI();
-        }, 500);
-      }, 300);
+    // Passkey
+    document.getElementById('btn-passkey').onclick = async () => {
+      log('🔑 [IDENTITY] auth.signIn("passkey") - FIDO2 WebAuthn biometric assertion...');
+      simulateSignIn('passkey', { id: 'cred-fido2-9988', name: 'Biometric Authenticated User', email: 'user@passkey.local', roles: ['USER', 'PASSKEY_AUTHED'], permissions: ['users:read', 'wallet:sign'], biometric: true });
     };
 
-    // Sign out
+    // Sign out via real library
     document.getElementById('btn-signout').onclick = () => {
-      authState.isAuthenticated = false;
-      authState.token = null;
-      authState.user = null;
-      localStorage.removeItem('isa_auth_token');
-      log('[STORE] User signed out. Cleared tokens and state.');
-      updateUI();
+      auth.signOut();
+      log('[ISA-AUTH] auth.signOut() called! Cleared reactive store, refresh timer, and storage.');
     };
 
-    // RBAC: Check Admin
+    // Real RBAC: Check Admin using auth.is()
     document.getElementById('btn-check-admin').onclick = () => {
-      if (!authState.isAuthenticated) {
+      if (!auth.isAuthenticated()) {
         log('❌ [GUARD FAIL] 401 Unauthenticated - 로그인 후 시도해주세요.');
         return;
       }
-      if (authState.user.roles && authState.user.roles.includes('ADMIN')) {
-        log('✅ [GUARD PASS] ADMIN 역할 검증 완료. (계층/역할 일치)');
+      const hasAdmin = auth.is('ADMIN');
+      if (hasAdmin) {
+        log('✅ [REAL GUARD PASS] auth.is("ADMIN") === true! 역할 계층 해석 성공.');
       } else {
-        log('❌ [GUARD FAIL] 403 Forbidden - ADMIN 역할이 부족합니다.');
+        log('❌ [REAL GUARD FAIL] auth.is("ADMIN") === false (403 Forbidden).');
       }
     };
 
-    // RBAC: Wildcard Permission Check
+    // Real RBAC: Wildcard Permission Check using auth.can()
     document.getElementById('btn-check-wildcard').onclick = () => {
-      if (!authState.isAuthenticated) {
+      if (!auth.isAuthenticated()) {
         log('❌ [GUARD FAIL] 401 Unauthenticated - 로그인 후 시도해주세요.');
         return;
       }
-      const hasWildcard = (authState.user.permissions || []).some(p => p === 'users:*' || p === '*');
-      if (hasWildcard) {
-        log('✨ [GUARD PASS] Wildcard Permission Match! 보유 권한 "users:*"가 요청 권한 "users:delete"를 포괄하여 승인되었습니다.');
+      const canDelete = auth.can('users:delete');
+      if (canDelete) {
+        log('✨ [REAL GUARD PASS] auth.can("users:delete") === true! 보유 권한 "users:*"가 요청 권한을 포괄 승인했습니다.');
       } else {
-        log('❌ [GUARD FAIL] 403 Forbidden - "users:delete" 권한이 없습니다.');
+        log('❌ [REAL GUARD FAIL] auth.can("users:delete") === false (403 Forbidden).');
       }
     };
 
-    // RBAC: Check Superadmin (Should fail) & Callbacks
-    document.getElementById('btn-check-superadmin').onclick = () => {
-      if (!authState.isAuthenticated) {
-        log('❌ [GUARD FAIL] 401 Unauthenticated -> onUnauthenticated() 콜백 발동!');
-        return;
-      }
-      if (authState.user.roles && authState.user.roles.includes('SUPERADMIN')) {
+    // Real RBAC: Evaluate Guard with callbacks
+    document.getElementById('btn-check-superadmin').onclick = async () => {
+      const res = await auth.evaluateGuard({
+        roles: ['SUPERADMIN'],
+        onForbidden: (err) => {
+          log(`🚨 [GUARD CALLBACK] onForbidden fired! Missing roles: ${err.missingRoles?.join(', ')}`);
+        }
+      });
+      if (res.allowed) {
         log('✅ [GUARD PASS] SUPERADMIN 권한 승인.');
       } else {
-        log('🚨 [GUARD FAIL] 403 Forbidden -> onForbidden({ missingRoles: ["SUPERADMIN"] }) & 전역 onUnauthorized() 콜백 발동!');
+        log(`❌ [GUARD BLOCKED] evaluateGuard allowed=false (Reason: ${res.reason})`);
       }
     };
 
-    // HTTP Auth Fetch Simulation
+    // HTTP Auth Fetch Simulation using real token
     document.getElementById('btn-check-fetch').onclick = () => {
-      if (!authState.isAuthenticated) {
-        log('[FETCH] No token found. Sending unauthenticated request...');
+      const token = auth.getAccessToken();
+      if (!token) {
+        log('[FETCH] No token in real store. Sending unauthenticated request...');
       } else {
-        log(`[FETCH] Injected header "Authorization: Bearer ${authState.token.substring(0, 16)}..."`);
+        log(`[FETCH] Injected real token: "Authorization: Bearer ${token.substring(0, 20)}..."`);
         log('[FETCH] Response: 200 OK (Authenticated API payload received)');
       }
     };
+
+    // Dynamic Buttons Showcase (auth.renderAllButtons)
+    const slotEl = document.getElementById('dynamic-buttons-slot');
+    function renderDynamicButtons(direction = 'grid') {
+      slotEl.innerHTML = '';
+      auth.renderAllButtons(slotEl, { direction, gap: '8px' });
+      log(`[UI] auth.renderAllButtons() invoked with layout "${direction}". Rendered all ${auth.getRegisteredProviders().length} providers.`);
+    }
+
+    document.getElementById('btn-layout-grid').onclick = () => renderDynamicButtons('grid');
+    document.getElementById('btn-layout-column').onclick = () => renderDynamicButtons('column');
+    document.getElementById('btn-layout-row').onclick = () => renderDynamicButtons('row');
+
+    // Initial dynamic buttons render
+    renderDynamicButtons('grid');
+
+    // Initial UI render
+    updateUI();
   </script>
 </body>
 </html>

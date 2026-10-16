@@ -94,8 +94,12 @@ export class AuthProvider<
   }
 
   signOut(): void {
-    if (this.provider) {
-      this.provider.signOut();
+    if (this.provider && typeof this.provider.signOut === 'function') {
+      try {
+        this.provider.signOut();
+      } catch (err) {
+        // Ignore provider-specific signOut error
+      }
     }
     this.service.clearAuthState();
   }
@@ -113,10 +117,21 @@ export class AuthProvider<
   }
 
   async getUserInfo(): Promise<any> {
-    if (this.provider) {
-      return await this.provider.getUserInfo();
+    // 1. Prioritize authenticated user from reactive store
+    const storeInfo = this.service.getAuthInfo?.();
+    if (storeInfo && Object.keys(storeInfo).length > 0) {
+      return storeInfo;
     }
-    return this.service.getAuthInfo();
+    // 2. Fallback to provider SDK if available
+    if (this.provider && typeof this.provider.getUserInfo === 'function') {
+      try {
+        const info = await this.provider.getUserInfo();
+        if (info) return info;
+      } catch (e) {
+        // fallback
+      }
+    }
+    return storeInfo || null;
   }
 
   getAccessToken(): string | null {

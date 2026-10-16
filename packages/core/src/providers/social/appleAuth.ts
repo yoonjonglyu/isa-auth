@@ -49,7 +49,7 @@ export class AppleAuthProvider implements AuthProvider {
     }
     await loadCDN(
       'apple-auth-sdk',
-      'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/auth.js',
+      'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js',
       { async: true, defer: true }
     );
   }
