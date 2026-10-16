@@ -8,11 +8,12 @@ export interface ButtonRenderInfo {
   label?: string;
   className?: string;
   icon?: string;
+  svg?: string;
   style?: Partial<CSSStyleDeclaration>;
 }
 
 /**
- * Creates and returns a native HTMLButtonElement
+ * Creates and returns a native HTMLButtonElement with vector icons & micro-animations
  */
 export function renderByJs(info: ButtonRenderInfo): HTMLButtonElement {
   const button = document.createElement('button');
@@ -27,25 +28,54 @@ export function renderByJs(info: ButtonRenderInfo): HTMLButtonElement {
   button.style.display = 'inline-flex';
   button.style.alignItems = 'center';
   button.style.justifyContent = 'center';
-  button.style.gap = '8px';
+  button.style.gap = '10px';
   button.style.cursor = 'pointer';
+  button.style.userSelect = 'none';
+  button.style.transition = 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)';
 
   if (info.style) {
     Object.assign(button.style, info.style);
   }
 
-  if (info.icon) {
+  // 1. Vector SVG Icon (High-Quality Vector)
+  if (info.svg) {
+    const iconContainer = document.createElement('span');
+    iconContainer.className = 'isa-auth-icon';
+    iconContainer.style.display = 'inline-flex';
+    iconContainer.style.alignItems = 'center';
+    iconContainer.style.justifyContent = 'center';
+    iconContainer.innerHTML = info.svg;
+    button.appendChild(iconContainer);
+  } else if (info.icon) {
     const iconImg = document.createElement('img');
     iconImg.src = info.icon;
     iconImg.alt = info.label || 'Auth icon';
-    iconImg.style.width = '20px';
-    iconImg.style.height = '20px';
+    iconImg.style.width = '18px';
+    iconImg.style.height = '18px';
     button.appendChild(iconImg);
   }
 
   const textSpan = document.createElement('span');
   textSpan.textContent = info.label || 'Sign In';
   button.appendChild(textSpan);
+
+  // Micro-interactions (Hover & Active state)
+  if (typeof button.addEventListener === 'function') {
+    button.addEventListener('mouseenter', () => {
+      button.style.transform = 'translateY(-1.5px)';
+      button.style.filter = 'brightness(1.05)';
+    });
+    button.addEventListener('mouseleave', () => {
+      button.style.transform = 'translateY(0)';
+      button.style.filter = 'none';
+    });
+    button.addEventListener('mousedown', () => {
+      button.style.transform = 'translateY(0.5px) scale(0.99)';
+    });
+    button.addEventListener('mouseup', () => {
+      button.style.transform = 'translateY(-1.5px)';
+    });
+  }
 
   return button;
 }
@@ -165,4 +195,25 @@ export function registerWebComponent() {
   }
 
   customElements.define('isa-auth-button', IsaAuthButtonElement);
+}
+
+/**
+ * TypeScript JSX IntrinsicElements Declaration for Web Component <isa-auth-button>
+ * Eliminates "Property 'isa-auth-button' does not exist on type 'JSX.IntrinsicElements'" in React/Vue/TSX
+ */
+export interface IsaAuthButtonAttributes {
+  provider?: string;
+  label?: string;
+  class?: string;
+  style?: string;
+  'onisa-auth-click'?: (event: CustomEvent) => void;
+  children?: any;
+}
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'isa-auth-button': IsaAuthButtonAttributes;
+    }
+  }
 }

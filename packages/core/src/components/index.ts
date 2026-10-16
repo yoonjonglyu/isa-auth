@@ -55,4 +55,6 @@ export {
   worldLoginButton,
   passkeyLoginButton,
 };
+
 export * from './loginButton';
+export * from './icons';

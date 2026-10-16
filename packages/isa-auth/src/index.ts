@@ -406,6 +406,8 @@ export class IsaAuth {
       label: data.text,
       className: data.className,
       style: data.style,
+      svg: data.svg,
+      icon: data.icon,
     });
 
     if (btn) {
@@ -450,6 +452,7 @@ export class IsaAuth {
       slot.className = `isa-auth-slot-${p}`;
       const btn = this.renderButton(p, slot);
       if (btn) {
+        btn.style.width = '100%';
         buttons.push(btn);
         wrapper.appendChild(slot);
       }
@@ -648,6 +651,10 @@ export {
   CookieSessionStorageAdapter,
   renderers,
 };
+
+export { createReactAuthButton } from './render/react';
+export type { IsaAuthButtonProps } from './render/react';
+export type { IsaAuthButtonAttributes } from './render';
 
 export type {
   ProviderCategory,
