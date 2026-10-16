@@ -3,10 +3,17 @@
 > **A Unified, Framework-Agnostic Frontend Authentication Suite**  
 > Supporting Multi-Provider OAuth (Google, Apple, Meta, Line, Kakao, Naver), Developer (GitHub, Discord), Web3 (SIWE), Identity (World ID Orb, Passkey WebAuthn), Reactive Store, Axios/Fetch Interceptors, and RBAC/ABAC Guards.
 
+[![Live Demo](https://img.shields.io/badge/Demo-Live_Playground-success?style=for-the-badge&logo=github)](https://yoonjonglyu.github.io/isa-auth/)
+[![npm version](https://img.shields.io/npm/v/isa-auth.svg?style=for-the-badge&color=cb3837)](https://www.npmjs.com/package/isa-auth)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 [![SWC](https://img.shields.io/badge/Compiler-SWC-orange.svg)](https://swc.rs/)
 [![Bundle Size](https://img.shields.io/badge/Zero_Node_Dependencies-Web_Crypto-green.svg)](https://w3c.github.io/webcrypto/)
+
+---
+
+> 🎮 **Try the Live Interactive Demo**: [https://yoonjonglyu.github.io/isa-auth/](https://yoonjonglyu.github.io/isa-auth/)  
+> Experience 11 authentication providers, real-time reactive store visualization, dynamic button layouts, and wildcard RBAC guard checks directly in your browser without any setup!
 
 ---
 

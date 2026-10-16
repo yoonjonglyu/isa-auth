@@ -344,7 +344,16 @@
 <body>
   <div class="container">
     <header>
-      <div class="badge">Framework-Agnostic Auth Suite</div>
+      <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap;">
+        <span class="badge">Framework-Agnostic Auth Suite</span>
+        <a href="https://github.com/yoonjonglyu/isa-auth" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); color: #f3f4f6; border-radius: 9999px; font-size: 13px; font-weight: 500; transition: all 0.2s ease;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub Repository
+        </a>
+        <a href="https://www.npmjs.com/package/isa-auth" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 9999px; font-size: 13px; font-weight: 500;">
+          npm v0.2.2
+        </a>
+      </div>
       <h1>ISA AUTH Playground</h1>
       <p class="subtitle">다중 OAuth (Google, Kakao, Naver, GitHub, Apple, Discord, LINE), Web3 SIWE, JWT 토큰 관리, 반응형 스토어, 와일드카드 RBAC 가드 & 라이프사이클 콜백 데모</p>
     </header>
@@ -507,7 +516,7 @@
       checkRole,
       checkPermission,
       evaluateGuard
-    } from '/dist/index.mjs';
+    } from './dist/index.mjs';
 
     const logEl = document.getElementById('event-log');
     const storeEl = document.getElementById('store-content');
@@ -523,22 +532,28 @@
       logEl.textContent = '';
     };
 
+    // Dynamic Environment Configuration (supports localhost, GitHub Pages, or custom domains)
+    const currentOrigin = window.location.origin;
+    const currentHost = window.location.host;
+    const currentHostname = window.location.hostname || 'localhost';
+    const callbackUrl = window.location.href.split('#')[0].split('?')[0];
+
     // 1. Initialize Real IsaAuth Multi-Provider Instance
     const auth = new IsaAuth({
       storage: 'dev_insecure_localStorage',
       storagePrefix: 'demo_app',
       providers: {
-        google: { clientId: 'demo-google-id', callbackUrl: 'http://localhost:3000/callback' },
-        apple: { clientId: 'com.demo.apple', callbackUrl: 'http://localhost:3000/callback' },
-        meta: { clientId: 'demo-meta-id', callbackUrl: 'http://localhost:3000/callback' },
-        kakao: { clientId: 'demo-kakao-key', callbackUrl: 'http://localhost:3000/callback' },
-        naver: { clientId: 'demo-naver-id', callbackUrl: 'http://localhost:3000/callback' },
-        line: { clientId: 'demo-line-id', callbackUrl: 'http://localhost:3000/callback' },
-        github: { clientId: 'demo-github-id', callbackUrl: 'http://localhost:3000/callback' },
-        discord: { clientId: 'demo-discord-id', callbackUrl: 'http://localhost:3000/callback' },
-        web3: { domain: 'localhost:3000' },
+        google: { clientId: 'demo-google-id', callbackUrl },
+        apple: { clientId: 'com.demo.apple', callbackUrl },
+        meta: { clientId: 'demo-meta-id', callbackUrl },
+        kakao: { clientId: 'demo-kakao-key', callbackUrl },
+        naver: { clientId: 'demo-naver-id', callbackUrl },
+        line: { clientId: 'demo-line-id', callbackUrl },
+        github: { clientId: 'demo-github-id', callbackUrl },
+        discord: { clientId: 'demo-discord-id', callbackUrl },
+        web3: { domain: currentHost },
         world: { clientId: 'app_demo_world_id', action: 'demo_vote' },
-        passkey: { rpName: 'ISA-AUTH Playground', rpId: 'localhost' },
+        passkey: { rpName: 'ISA-AUTH Playground', rpId: currentHostname },
       }
     });
 

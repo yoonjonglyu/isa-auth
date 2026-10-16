@@ -9,7 +9,9 @@
     "build:auth": "yarn --cwd packages/isa-auth build",
     "build": "yarn build:core && yarn build:auth",
     "test": "node tests/integration.test.js",
-    "demo": "node packages/demo/server.js"
+    "demo": "node packages/demo/server.js",
+    "build:demo": "yarn build && node scripts/build-demo.js",
+    "deploy:demo": "yarn build:demo && node scripts/deploy-gh-pages.js"
   },
   "dependencies": {},
   "devDependencies": {
