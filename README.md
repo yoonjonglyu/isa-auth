@@ -330,16 +330,16 @@ const devAuth = new IsaAuth({
 
 ---
 
-## 🖥️ Backend Adapter: `@isa-auth/server`
+## 🖥️ Backend Adapter: `isa-auth-server`
 
 Backend token exchange & verification engine designed to receive frontend OAuth codes, Web3 SIWE signatures, Passkey assertions, and World ID proofs, validating them and issuing secure app JWTs.
 
 ```bash
-npm install @isa-auth/server
+npm install isa-auth-server
 ```
 
 ```typescript
-import { IsaAuthServer, createExpressHandler, createNextRouteHandler } from '@isa-auth/server';
+import { IsaAuthServer, createExpressHandler, createNextRouteHandler } from 'isa-auth-server';
 
 const authServer = new IsaAuthServer({
   jwt: {
@@ -362,7 +362,7 @@ export const POST = createNextRouteHandler(authServer);
 
 ---
 
-## 🤖 AI Agent MCP: `@isa-auth/mcp`
+## 🤖 AI Agent MCP: `isa-auth-mcp`
 
 Official **Model Context Protocol (MCP)** server enabling AI coding assistants (Claude Desktop, Cursor, Antigravity) to evaluate permissions, inspect JWTs, and verify signatures via Stdio.
 
@@ -372,7 +372,7 @@ Official **Model Context Protocol (MCP)** server enabling AI coding assistants (
   "mcpServers": {
     "isa-auth": {
       "command": "npx",
-      "args": ["-y", "@isa-auth/mcp"]
+      "args": ["-y", "isa-auth-mcp"]
     }
   }
 }

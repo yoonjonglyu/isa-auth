@@ -353,6 +353,12 @@
         <a href="https://www.npmjs.com/package/isa-auth" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; border-radius: 9999px; font-size: 13px; font-weight: 500;">
           npm v0.2.2
         </a>
+        <button id="btn-open-mcp" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; border-radius: 9999px; font-size: 13px; font-weight: 600; transition: all 0.2s ease;">
+          🤖 AI Agent & MCP
+        </button>
+        <button id="btn-open-backend" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; border-radius: 9999px; font-size: 13px; font-weight: 600; transition: all 0.2s ease;">
+          🖥️ Backend BFF
+        </button>
       </div>
       <h1>ISA AUTH Playground</h1>
       <p class="subtitle">다중 OAuth (Google, Kakao, Naver, GitHub, Apple, Discord, LINE), Web3 SIWE, JWT 토큰 관리, 반응형 스토어, 와일드카드 RBAC 가드 & 라이프사이클 콜백 데모</p>
@@ -773,6 +779,119 @@
 
     // Initial UI render
     updateUI();
+
+    // Modal Handlers
+    const modalMcp = document.getElementById('modal-mcp');
+    const modalBackend = document.getElementById('modal-backend');
+
+    document.getElementById('btn-open-mcp').onclick = () => modalMcp.style.display = 'flex';
+    document.getElementById('btn-close-mcp').onclick = () => modalMcp.style.display = 'none';
+
+    document.getElementById('btn-open-backend').onclick = () => modalBackend.style.display = 'flex';
+    document.getElementById('btn-close-backend').onclick = () => modalBackend.style.display = 'none';
+
+    window.onclick = (e) => {
+      if (e.target === modalMcp) modalMcp.style.display = 'none';
+      if (e.target === modalBackend) modalBackend.style.display = 'none';
+    };
+
+    document.getElementById('btn-copy-mcp').onclick = () => {
+      const code = document.getElementById('code-mcp').textContent;
+      navigator.clipboard.writeText(code);
+      const btn = document.getElementById('btn-copy-mcp');
+      btn.textContent = '✔ Copied!';
+      setTimeout(() => btn.textContent = 'Copy JSON Config', 2000);
+    };
+
+    document.getElementById('btn-copy-backend').onclick = () => {
+      const code = document.getElementById('code-backend').textContent;
+      navigator.clipboard.writeText(code);
+      const btn = document.getElementById('btn-copy-backend');
+      btn.textContent = '✔ Copied!';
+      setTimeout(() => btn.textContent = 'Copy Backend Code', 2000);
+    };
   </script>
+
+  <!-- MCP Modal -->
+  <div id="modal-mcp" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
+    <div style="background: #111827; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; max-width: 650px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 8px;">
+          🤖 isa-auth-mcp (AI Agent Model Context Protocol)
+        </h3>
+        <button id="btn-close-mcp" style="background: none; border: none; color: #9ca3af; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <p style="color: #9ca3af; font-size: 0.9rem; margin-bottom: 16px; line-height: 1.6;">
+        Claude Desktop, Cursor, Antigravity 등의 AI 에이전트가 사용자 권한을 사전에 검증하고 JWT를 분석할 수 있는 공식 MCP 서버입니다.
+      </p>
+
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.82rem; font-weight: 600; color: #60a5fa;">claude_desktop_config.json 설정:</span>
+          <button id="btn-copy-mcp" style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; cursor: pointer;">
+            Copy JSON Config
+          </button>
+        </div>
+        <pre id="code-mcp" style="background: #030712; padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #a7f3d0; overflow-x: auto;">{
+  "mcpServers": {
+    "isa-auth": {
+      "command": "npx",
+      "args": ["-y", "isa-auth-mcp"]
+    }
+  }
+}</pre>
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+        <h4 style="font-size: 0.9rem; font-weight: 600; color: #f3f4f6; margin-bottom: 8px;">제공되는 핵심 AI 도구 (Tools):</h4>
+        <ul style="color: #d1d5db; font-size: 0.82rem; line-height: 1.7; padding-left: 20px;">
+          <li><b>isa_check_permission</b>: 와일드카드 RBAC(<code>users:*</code>) 및 계층적 역할 검증</li>
+          <li><b>isa_inspect_jwt</b>: JWT 토큰 디코딩, 만료시간 및 잔여 TTL 실시간 계산</li>
+          <li><b>isa_verify_siwe</b>: Web3 SIWE(EIP-4361) 서명 규격 및 주소 매칭 검증</li>
+          <li><b>isa_scaffold_provider</b>: 11개 프로바이더별 클라이언트 초기화 코드 및 .env 템플릿 생성</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend Modal -->
+  <div id="modal-backend" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 16px;">
+    <div style="background: #111827; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; max-width: 650px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #60a5fa; display: flex; align-items: center; gap: 8px;">
+          🖥️ isa-auth-server (Backend BFF Adapter)
+        </h3>
+        <button id="btn-close-backend" style="background: none; border: none; color: #9ca3af; font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+      <p style="color: #9ca3af; font-size: 0.9rem; margin-bottom: 16px; line-height: 1.6;">
+        프론트엔드에서 보낸 OAuth <code>code</code>, Web3 <code>SIWE 서명</code>, <code>Passkey</code>, <code>World ID</code>를 받아 검증 후 앱 자체 JWT를 발급하는 경량 백엔드 엔진입니다.
+      </p>
+
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-size: 0.82rem; font-weight: 600; color: #34d399;">Express / Next.js 구현 예제:</span>
+          <button id="btn-copy-backend" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; padding: 4px 10px; border-radius: 6px; font-size: 0.78rem; cursor: pointer;">
+            Copy Backend Code
+          </button>
+        </div>
+        <pre id="code-backend" style="background: #030712; padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #93c5fd; overflow-x: auto;">import { IsaAuthServer, createExpressHandler, createNextRouteHandler } from 'isa-auth-server';
+
+const authServer = new IsaAuthServer({
+  jwt: { secret: process.env.JWT_SECRET, expiresInSeconds: 3600 },
+  providers: {
+    google: { clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET },
+    kakao: { clientId: process.env.KAKAO_CLIENT_ID, clientSecret: process.env.KAKAO_CLIENT_SECRET },
+  },
+  worldId: { appId: process.env.WORLD_ID_APP_ID }
+});
+
+// Express.js
+app.post('/api/auth/exchange', createExpressHandler(authServer));
+
+// Next.js App Router (app/api/auth/exchange/route.ts)
+export const POST = createNextRouteHandler(authServer);</pre>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,10 +1,13 @@
 {
-  "name": "@isa-auth/server",
+  "name": "isa-auth-server",
   "version": "0.2.2",
   "description": "Backend token exchange & verification adapters for isa-auth, supporting OAuth code exchange, SIWE Web3, World ID proof, Passkey assertion, and multi-framework handlers (Express, Next.js, Fastify)",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "type": "tsc --noEmit"

@@ -1,5 +1,5 @@
 {
-  "name": "@isa-auth/mcp",
+  "name": "isa-auth-mcp",
   "version": "0.2.2",
   "description": "Model Context Protocol (MCP) server for isa-auth, providing AI agents with RBAC permission checking, JWT inspection, Web3 SIWE verification, and auth scaffolding tools",
   "main": "./dist/index.js",
