@@ -15,6 +15,7 @@
     "test:mcp": "node tests/mcp.test.js",
     "test": "node scripts/run-tests.js",
     "demo": "node packages/demo/server.js",
+    "app": "node examples/dashboard-app/server.js",
     "build:demo": "yarn build && node scripts/build-demo.js",
     "deploy:demo": "yarn build:demo && node scripts/deploy-gh-pages.js"
   },

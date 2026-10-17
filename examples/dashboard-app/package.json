@@ -1,0 +1,10 @@
+{
+  "name": "isa-auth-example-dashboard",
+  "version": "0.2.2",
+  "private": true,
+  "description": "Full-stack SaaS dashboard example powered by isa-auth and isa-auth-server",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}
