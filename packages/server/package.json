@@ -1,0 +1,32 @@
+{
+  "name": "@isa-auth/server",
+  "version": "0.2.2",
+  "description": "Backend token exchange & verification adapters for isa-auth, supporting OAuth code exchange, SIWE Web3, World ID proof, Passkey assertion, and multi-framework handlers (Express, Next.js, Fastify)",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "type": "tsc --noEmit"
+  },
+  "keywords": [
+    "auth",
+    "isa-auth",
+    "oauth2",
+    "bff",
+    "token-exchange",
+    "siwe",
+    "world-id",
+    "passkey",
+    "express",
+    "nextjs"
+  ],
+  "author": "isa-auth contributors",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsup": "^8.5.1",
+    "typescript": "^5.8.2"
+  }
+}

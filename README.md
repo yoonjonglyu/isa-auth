@@ -328,16 +328,74 @@ const devAuth = new IsaAuth({
 
 ---
 
-## 🧪 Interactive Playground & Testing
+---
 
-Run the local playground to test all 11 providers, World ID Orb, Passkey, and guards interactively:
+## 🖥️ Backend Adapter: `@isa-auth/server`
+
+Backend token exchange & verification engine designed to receive frontend OAuth codes, Web3 SIWE signatures, Passkey assertions, and World ID proofs, validating them and issuing secure app JWTs.
 
 ```bash
-# 1. Build monorepo
-yarn build    # or Windows: yarn.cmd build
+npm install @isa-auth/server
+```
 
-# 2. Run test suite (22 unit & integration tests)
-node scratch/test_enhanced_features.js
+```typescript
+import { IsaAuthServer, createExpressHandler, createNextRouteHandler } from '@isa-auth/server';
+
+const authServer = new IsaAuthServer({
+  jwt: {
+    secret: process.env.JWT_SECRET!,
+    expiresInSeconds: 3600,
+  },
+  providers: {
+    google: { clientId: process.env.GOOGLE_CLIENT_ID!, clientSecret: process.env.GOOGLE_CLIENT_SECRET! },
+    kakao: { clientId: process.env.KAKAO_CLIENT_ID!, clientSecret: process.env.KAKAO_CLIENT_SECRET! },
+  },
+  worldId: { appId: process.env.WORLD_ID_APP_ID! },
+});
+
+// Express.js
+app.post('/api/auth/exchange', createExpressHandler(authServer));
+
+// Next.js App Router (app/api/auth/exchange/route.ts)
+export const POST = createNextRouteHandler(authServer);
+```
+
+---
+
+## 🤖 AI Agent MCP: `@isa-auth/mcp`
+
+Official **Model Context Protocol (MCP)** server enabling AI coding assistants (Claude Desktop, Cursor, Antigravity) to evaluate permissions, inspect JWTs, and verify signatures via Stdio.
+
+```json
+// Add to claude_desktop_config.json:
+{
+  "mcpServers": {
+    "isa-auth": {
+      "command": "npx",
+      "args": ["-y", "@isa-auth/mcp"]
+    }
+  }
+}
+```
+
+### Provided Agent Tools:
+- **`isa_check_permission`**: Evaluates wildcard RBAC (`users:*`) and role inheritance hierarchies.
+- **`isa_inspect_jwt`**: Parses JWT tokens, extracts claims, and calculates remaining TTL seconds.
+- **`isa_verify_siwe`**: Validates EIP-4361 Sign-In with Ethereum format and address matching.
+- **`isa_scaffold_provider`**: Generates provider setup code and `.env` template for any of the 11 providers.
+
+---
+
+## 🧪 Interactive Playground & Testing
+
+Run the local playground or execute the complete test framework:
+
+```bash
+# 1. Build entire monorepo
+yarn build
+
+# 2. Run test framework (33 unit & integration tests)
+yarn test
 
 # 3. Launch interactive playground
 yarn demo

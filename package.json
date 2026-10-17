@@ -7,8 +7,13 @@
   "scripts": {
     "build:core": "yarn --cwd packages/core build && yarn --cwd packages/core type",
     "build:auth": "yarn --cwd packages/isa-auth build",
-    "build": "yarn build:core && yarn build:auth",
-    "test": "node tests/integration.test.js",
+    "build:server": "yarn --cwd packages/server build",
+    "build:mcp": "yarn --cwd packages/mcp build",
+    "build": "yarn build:core && yarn build:auth && yarn build:server && yarn build:mcp",
+    "test:integration": "node tests/integration.test.js",
+    "test:server": "node tests/server.test.js",
+    "test:mcp": "node tests/mcp.test.js",
+    "test": "node scripts/run-tests.js",
     "demo": "node packages/demo/server.js",
     "build:demo": "yarn build && node scripts/build-demo.js",
     "deploy:demo": "yarn build:demo && node scripts/deploy-gh-pages.js"
